@@ -1,0 +1,29 @@
+# Default configuration for experiments
+experiment:
+  seed: 42
+  device: "cuda"
+  precision: "bfloat16"
+  
+inference:
+  max_new_tokens: 128
+  do_sample: false
+  temperature: 1.0
+  top_p: 1.0
+  
+analysis:
+  pca_components: 10
+  visualization_dpi: 300
+  histogram_bins: 50
+  token_index: -1  # Last token by default
+  
+hooks:
+  alpha: 1.0  # Scaling factor for injection
+  max_uses: 1  # Number of forward passes
+  token_index: 1  # Token position for injection
+  
+output:
+  base_dir: "./result"
+  inference_dir: "./result/inference"
+  analysis_dir: "./result/analysis"
+  hook_dir: "./result/hook"
+

@@ -1,0 +1,46 @@
+# Dataset configurations
+datasets:
+  # Safety benchmarks
+  Figstep:
+    description: "FigStep adversarial image dataset"
+    type: "adversarial"
+    modality: "image"
+    path: "dataset/FigStep/data/images/SafeBench"
+    
+  StrongREJECT:
+    description: "StrongREJECT harmful prompts"
+    type: "harmful"
+    modality: "text"
+    huggingface_id: "walledai/StrongREJECT"
+    
+  XSTest:
+    description: "XSTest false positive evaluation"
+    type: "benign"
+    modality: "text"
+    huggingface_id: "walledai/XSTest"
+    
+  AdvBench:
+    description: "AdvBench harmful behaviors"
+    type: "harmful"
+    modality: "text"
+    huggingface_id: "walledai/AdvBench"
+    
+  HarmBench:
+    description: "HarmBench standard harmful prompts"
+    type: "harmful"
+    modality: "text"
+    huggingface_id: "walledai/HarmBench"
+    
+  SorryBench:
+    description: "SorryBench safety evaluation"
+    type: "harmful"
+    modality: "text"
+    huggingface_id: "sorry-bench/sorry-bench-202503"
+
+# Image types for multimodal experiments
+image_types:
+  blank: "Blank images (various resolutions)"
+  panda: "Clean panda image"
+  noise: "Gaussian noise images"
+  nsfw: "NSFW content images"
+
