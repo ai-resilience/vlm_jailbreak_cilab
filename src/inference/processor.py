@@ -5,6 +5,10 @@ import sys
 import os
 
 # Add paths for DeepSeek utilities
+# Add src/models to path so we can import deepseek_vl modules
+_current_dir = os.path.dirname(os.path.abspath(__file__))
+_project_root = os.path.dirname(os.path.dirname(_current_dir))
+sys.path.append(os.path.join(_project_root, "models"))
 sys.path.append(os.path.abspath("utils/model/DeepSeek_VL"))
 sys.path.append(os.path.abspath("utils/model/DeepSeek_VL2"))
 
@@ -85,7 +89,7 @@ def build_prompt(
     message = build_template(model_name, img, prompt)
     
     if model_name == "deepseek":
-        from utils.model.DeepSeek_VL.deepseek_vl.utils.io import load_pil_images
+        from ..models.deepseek_vl.utils.io import load_pil_images
         
         if img is None:
             text = processor(conversations=message, images=[], force_batchify=True).to(model.device)
@@ -97,12 +101,12 @@ def build_prompt(
         return input_embeds, text.attention_mask
     
     elif model_name == "deepseek2":
-        from utils.model.DeepSeek_VL2.deepseek_vl2.utils.io import load_pil_images as load_pil_images_2
+        from ..models.deepseek_vl2.utils.io import load_pil_images
         
         if img is None:
             text = processor(conversations=message, images=[], force_batchify=True, system_prompt="").to(model.device)
         else:
-            image = load_pil_images_2(message)
+            image = load_pil_images(message)
             text = processor(conversations=message, images=image, force_batchify=True, system_prompt="").to(model.device)
         
         input_embeds = model.prepare_inputs_embeds(**text)
