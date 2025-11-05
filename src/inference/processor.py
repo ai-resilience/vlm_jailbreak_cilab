@@ -32,7 +32,7 @@ def build_template(model_name: str, img: Optional[str], prompt: str) -> List[Dic
     
     elif model_name == "intern":
         if img is None:
-            return [f"{img}", f"{prompt}"]
+            return [None, f"{prompt}"]
         else:
             return [f"{img}", f"<image>\n{prompt}"]
     
