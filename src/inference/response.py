@@ -32,7 +32,7 @@ def generate_response(
     inputs, attention_mask = build_prompt(model, processor, model_name, img, prompt)
     
     if model_name == "intern":
-        from ..models.intern import load_image, generation_config
+        from ..models.intern.preprocess import load_image, generation_config
         
         prompt_text = inputs[1]
         image_path = inputs[0]

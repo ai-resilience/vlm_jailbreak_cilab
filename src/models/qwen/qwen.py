@@ -1,15 +1,15 @@
 """Qwen-VL model implementation."""
 import torch
-from .base import BaseVLM, find_norm, find_num_hidden_layers
-from typing import Tuple, Any
+from ..base import BaseVLM, find_norm, find_num_hidden_layers
+from typing import Tuple, Any, Optional
 
 
 class QwenModel(BaseVLM):
     """Qwen2.5-VL model wrapper."""
     
-    def __init__(self, model_path: str = '/mnt/server14_hard1/kihyun/Qwen2.5-VL-7B-Instruct'):
-        super().__init__(model_path)
+    def __init__(self, model_path: Optional[str] = None):
         self.model_name = "qwen"
+        super().__init__(model_path)
         
     def load(self) -> Tuple[Any, Any, Any]:
         """Load Qwen-VL model."""
