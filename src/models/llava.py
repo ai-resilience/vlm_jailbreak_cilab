@@ -1,15 +1,15 @@
 """LLaVA model implementations."""
 import torch
 from .base import BaseVLM, find_norm, find_num_hidden_layers
-from typing import Tuple, Any
+from typing import Tuple, Any, Optional
 
 
 class LlavaModel(BaseVLM):
     """LLaVA 1.5 model wrapper."""
     
-    def __init__(self, model_path: str = '/mnt/server11_hard4/kihyun/mil/llava-1.5-13b-hf'):
-        super().__init__(model_path)
+    def __init__(self, model_path: Optional[str] = None):
         self.model_name = "llava"
+        super().__init__(model_path)
         
     def load(self) -> Tuple[Any, Any, Any]:
         """Load LLaVA 1.5 model."""
@@ -36,9 +36,9 @@ class LlavaModel(BaseVLM):
 class LlavaNextModel(BaseVLM):
     """LLaVA-NeXT model wrapper."""
     
-    def __init__(self, model_path: str = "/mnt/server14_hard1/kihyun/llava-v1.6-mistral-7b-hf"):
-        super().__init__(model_path)
+    def __init__(self, model_path: Optional[str] = None):
         self.model_name = "llava_next"
+        super().__init__(model_path)
         
     def load(self) -> Tuple[Any, Any, Any]:
         """Load LLaVA-NeXT model."""
