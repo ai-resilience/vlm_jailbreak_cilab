@@ -63,3 +63,8 @@ Thumbs.db
 *.safetensors
 model_cache/
 
+# Large binary files
+*.ttc
+*.ttf
+*.otf
+

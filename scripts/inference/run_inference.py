@@ -18,7 +18,7 @@ from src.inference import generate_response
 def parse_args():
     parser = argparse.ArgumentParser(description="Run VLM inference on a dataset")
     parser.add_argument('--model_name', type=str, required=True,
-                       choices=['llava', 'llava_next', 'intern', 'qwen', 'deepseek'],
+                       choices=['llava', 'llava_next', 'intern', 'qwen', 'deepseek', 'deepseek2'],
                        help='Model name')
     parser.add_argument('--dataset', type=str, required=True,
                        help='Dataset name (e.g., Figstep, StrongREJECT, XSTest)')

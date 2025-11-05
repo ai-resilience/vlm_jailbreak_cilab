@@ -3,7 +3,8 @@ from .base import BaseVLM
 from .llava import LlavaModel, LlavaNextModel
 from .qwen import QwenModel
 from .intern import InternModel
-from .deepseek import DeepSeekModel, DeepSeek2Model
+from .deepseek_vl.deepseek import DeepSeekModel
+from .deepseek_vl2.deepseek import DeepSeek2Model
 from typing import Tuple, Any
 
 
