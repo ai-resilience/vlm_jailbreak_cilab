@@ -113,7 +113,7 @@ def build_prompt(
         return input_embeds, text.attention_mask
     
     elif model_name == "qwen":
-        from utils.model.Qwen_VL.qwen_vl_utils.src.qwen_vl_utils.vision_process import process_vision_info
+        from ..models.qwen.vision_process import process_vision_info
         
         if img is None:
             inputs = processor.apply_chat_template(
