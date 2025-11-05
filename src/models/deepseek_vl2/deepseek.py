@@ -3,14 +3,14 @@ import sys
 import os
 import torch
 from ..base import BaseVLM, find_norm, find_num_hidden_layers
-from typing import Tuple, Any
+from typing import Tuple, Any, Optional
 
 class DeepSeek2Model(BaseVLM):
     """DeepSeek-VL v2 model wrapper."""
     
-    def __init__(self, model_path: str = '/mnt/server14_hard1/kihyun/deepseek-vl2-small'):
-        super().__init__(model_path)
+    def __init__(self, model_path: Optional[str] = None):
         self.model_name = "deepseek2"
+        super().__init__(model_path)
         
     def load(self) -> Tuple[Any, Any, Any]:
         """Load DeepSeek-VL v2 model."""

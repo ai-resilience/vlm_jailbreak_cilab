@@ -30,3 +30,9 @@ models:
     token_index: 1
     key_layer: 18
 
+  deepseek2:
+    name: "DeepSeek-VL2-small"
+    path: "/mnt/server14_hard1/kihyun/deepseek-vl2-small"
+    token_index: 1
+    key_layer: 1
+

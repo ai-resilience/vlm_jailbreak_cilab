@@ -1,4 +1,6 @@
 """Base model interface for Vision-Language Models."""
+import yaml
+from pathlib import Path
 from abc import ABC, abstractmethod
 from typing import Tuple, Any, Optional
 
@@ -53,15 +55,49 @@ def find_num_hidden_layers(model: Any) -> int:
     raise ValueError("❌ Could not find any num_hidden_layers.")
 
 
+def _load_model_config(model_name: str) -> Optional[str]:
+    """Load model path from configs/models.yaml.
+    
+    Args:
+        model_name: Name of the model
+        
+    Returns:
+        Model path from config, or None if not found
+    """
+    config_path = Path(__file__).parent.parent.parent / "configs" / "models.yaml"
+    if not config_path.exists():
+        return None
+    
+    try:
+        with open(config_path, 'r') as f:
+            config = yaml.safe_load(f)
+        models = config.get('models', {})
+        if model_name in models:
+            return models[model_name].get('path')
+    except Exception:
+        pass
+    
+    return None
+
+
 class BaseVLM(ABC):
     """Abstract base class for Vision-Language Models."""
     
-    def __init__(self, model_path: str):
+    def __init__(self, model_path: Optional[str] = None):
+        # If model_path not provided, try to load from config
+        if model_path is None:
+            if self.model_name:
+                model_path = _load_model_config(self.model_name)
+            if model_path is None:
+                raise ValueError(
+                    f"model_path must be provided or defined in configs/models.yaml for {self.__class__.__name__}"
+                )
+        
         self.model_path = model_path
         self.model = None
         self.processor = None
         self.tokenizer = None
-        self.model_name = None  # Should be set by subclasses
+        # model_name should be set by subclasses before calling super().__init__()
         
     @abstractmethod
     def load(self) -> Tuple[Any, Any, Any]:
