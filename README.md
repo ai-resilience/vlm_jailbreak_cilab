@@ -67,10 +67,8 @@ vlm_refactoring/
 cd vlm_refactoring
 
 # Install dependencies
-pip install -r requirements.txt
+bash env_setting.sh
 
-# Install the package in development mode
-pip install -e .
 ```
 
 ### Basic Usage
