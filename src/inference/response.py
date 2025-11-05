@@ -68,8 +68,8 @@ def generate_response(
         
         response = processor.tokenizer.decode(out, skip_special_tokens=True)
         return response
-    
-    else:  # llava, llava_next, qwen, gemma
+
+    else:  # llava, llava_next, qwen, gemma, kimi
         inputs.to(model.device, dtype=torch.bfloat16)
         input_len = inputs["input_ids"].shape[-1]
         

@@ -31,8 +31,15 @@ models:
     key_layer: 18
 
   deepseek2:
-    name: "DeepSeek-VL2-small"
+    name: "DeepSeek-VL2-small(MoE)"
     path: "/mnt/server14_hard1/kihyun/deepseek-vl2-small"
     token_index: 1
     key_layer: 1
+
+  kimi:
+    name: "Kimi-VL-A3B-instruct(MoE)"
+    path: "/mnt/server14_hard1/kihyun/Kimi-VL-A3B-Instruct"
+    token_index: 1
+    key_layer: 1
+
 
