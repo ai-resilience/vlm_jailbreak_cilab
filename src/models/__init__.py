@@ -8,6 +8,7 @@ from .qwen.qwen import QwenModel
 from .intern.intern import InternModel
 from .deepseek_vl.deepseek import DeepSeekModel
 from .deepseek_vl2.deepseek import DeepSeek2Model
+from .kimi.kimi import KimiVLModel
 from typing import Tuple, Any, Optional
 
 
@@ -26,7 +27,7 @@ def load_model(model_name: str, model_path: Optional[str] = None) -> Tuple[Any, 
     """Factory function to load models by name.
     
     Args:
-        model_name: Name of the model ('llava', 'llava_next', 'qwen', 'intern', 'deepseek', 'deepseek2')
+        model_name: Name of the model ('llava', 'llava_next', 'qwen', 'intern', 'deepseek', 'deepseek2', 'kimi')
         model_path: Optional custom model path. If not provided, uses path from configs/models.yaml
         
     Returns:
@@ -39,6 +40,7 @@ def load_model(model_name: str, model_path: Optional[str] = None) -> Tuple[Any, 
         'intern': InternModel,
         'deepseek': DeepSeekModel,
         'deepseek2': DeepSeek2Model,
+        'kimi': KimiVLModel,
     }
     
     if model_name not in model_map:
@@ -60,6 +62,7 @@ __all__ = [
     'InternModel',
     'DeepSeekModel',
     'DeepSeek2Model',
+    'KimiVLModel',
     'load_model',
 ]
 
