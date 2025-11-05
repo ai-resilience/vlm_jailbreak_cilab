@@ -1,7 +1,6 @@
 """Qwen-VL model implementation."""
 import torch
-from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor
-from .base import BaseVLM
+from .base import BaseVLM, find_norm, find_num_hidden_layers
 from typing import Tuple, Any
 
 
@@ -10,9 +9,12 @@ class QwenModel(BaseVLM):
     
     def __init__(self, model_path: str = '/mnt/server14_hard1/kihyun/Qwen2.5-VL-7B-Instruct'):
         super().__init__(model_path)
+        self.model_name = "qwen"
         
     def load(self) -> Tuple[Any, Any, Any]:
         """Load Qwen-VL model."""
+        from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor
+        
         self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
             self.model_path, 
             torch_dtype="auto", 
@@ -24,9 +26,9 @@ class QwenModel(BaseVLM):
     
     def get_num_layers(self) -> int:
         """Get number of hidden layers."""
-        return self.model.config.text_config.num_hidden_layers
+        return find_num_hidden_layers(self.model)
     
     def get_norm_layer(self) -> Any:
         """Get normalization layer."""
-        return self.model.language_model.norm
+        return find_norm(self.model)
 

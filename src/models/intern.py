@@ -3,8 +3,7 @@ import torch
 import torchvision.transforms as T
 from PIL import Image
 from torchvision.transforms.functional import InterpolationMode
-from transformers import AutoModel, AutoTokenizer
-from .base import BaseVLM
+from .base import BaseVLM, find_norm, find_num_hidden_layers
 from typing import Tuple, Any
 
 
@@ -13,9 +12,12 @@ class InternModel(BaseVLM):
     
     def __init__(self, model_path: str = '/mnt/server14_hard1/kihyun/InternVL3-8B'):
         super().__init__(model_path)
+        self.model_name = "intern"
         
     def load(self) -> Tuple[Any, Any, Any]:
         """Load InternVL model."""
+        from transformers import AutoModel, AutoTokenizer
+        
         self.model = AutoModel.from_pretrained(
             self.model_path, 
             torch_dtype=torch.bfloat16, 
@@ -29,11 +31,11 @@ class InternModel(BaseVLM):
     
     def get_num_layers(self) -> int:
         """Get number of hidden layers."""
-        return self.model.config.llm_config.num_hidden_layers
+        return find_num_hidden_layers(self.model)
     
     def get_norm_layer(self) -> Any:
         """Get normalization layer."""
-        return self.model.language_model.norm
+        return find_norm(self.model)
 
 IMAGENET_MEAN = (0.485, 0.456, 0.406)
 IMAGENET_STD = (0.229, 0.224, 0.225)
