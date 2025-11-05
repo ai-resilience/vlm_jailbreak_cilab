@@ -32,11 +32,15 @@ def generate_response(
     inputs, attention_mask = build_prompt(model, processor, model_name, img, prompt)
     
     if model_name == "intern":
-        from preprocess import load_image, generation_config
+        from ..models.intern import load_image, generation_config
         
         prompt_text = inputs[1]
         image_path = inputs[0]
-        pixel_values = load_image(image_path, max_num=12).to(torch.bfloat16).cuda()
+        
+        if image_path is not None:
+            pixel_values = load_image(image_path, max_num=12).to(torch.bfloat16).cuda()
+        else:
+            pixel_values = None
         
         with torch.no_grad():
             response = model.chat(processor, pixel_values, prompt_text, generation_config)
