@@ -9,9 +9,6 @@ import os
 _current_dir = os.path.dirname(os.path.abspath(__file__))
 _project_root = os.path.dirname(os.path.dirname(_current_dir))
 sys.path.append(os.path.join(_project_root, "models"))
-sys.path.append(os.path.abspath("utils/model/DeepSeek_VL"))
-sys.path.append(os.path.abspath("utils/model/DeepSeek_VL2"))
-
 
 def build_template(model_name: str, img: Optional[str], prompt: str) -> List[Dict]:
     """Build conversation template for model.
@@ -31,7 +28,7 @@ def build_template(model_name: str, img: Optional[str], prompt: str) -> List[Dic
     
     user_content.append({"type": "text", "text": prompt})
     
-    if model_name in ["llava", "llava_next", "qwen", "gemma"]:
+    if model_name in ["llava", "llava_next", "qwen", "gemma", "kimi"]:
         return [{"role": "user", "content": user_content}]
     
     elif model_name == "intern":
@@ -129,8 +126,17 @@ def build_prompt(
     
     elif model_name == "intern":
         return message, None
+
+    elif model_name == "kimi":
+        text = processor.apply_chat_template(message, add_generation_prompt=True, return_tensors="pt")
+        if img is not None:
+            image = Image.open(img)
+        else:
+            image = None
+        inputs = processor(text=[text], images=image, padding=True, return_tensors="pt")
+        return inputs, None
     
-    else:  # llava, llava_next, gemma
+    else:  # llava, llava_next, qwen, gemma
         inputs = processor.apply_chat_template(
             message, add_generation_prompt=True, tokenize=True,
             return_dict=True, return_tensors="pt"
