@@ -234,7 +234,7 @@ If you use this framework in your research, please cite:
 @software{vlm_safety_framework,
   title={VLM Safety Research Framework},
   year={2025},
-  url={https://github.com/yourusername/vlm_refactoring}
+  url={https://github.com/ai-resilience/vlm_jailbreak_cilab}
 }
 ```
 
