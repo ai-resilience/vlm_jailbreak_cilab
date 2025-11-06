@@ -42,4 +42,8 @@ models:
     token_index: 1
     key_layer: 1
 
+  llamaguard4:
+    name: "Llama-Guard-4-12B"
+    path: "/mnt/server14_hard1/kihyun/Llama-Guard-4-12B"
+
 
