@@ -3,4 +3,5 @@ pip install transformers==4.51.3 tokenizers==0.21.4 accelerate==1.10.1 safetenso
 pip install datasets==4.4.0
 pip install scikit-learn==1.7.2
 pip install matplotlib==3.10.7
+pip install tiktoken==0.12.0
 pip install ipdb

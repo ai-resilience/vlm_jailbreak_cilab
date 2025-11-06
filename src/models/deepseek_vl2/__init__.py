@@ -19,26 +19,8 @@
 
 
 # check if python version is above 3.10
-# Setup local transformers path before any other imports
 import sys
-import os
-from pathlib import Path
 
-# Get the directory where this __init__.py is located
-_DEEPSEEK_VL2_DIR = Path(__file__).parent
-_TRANSFORMERS_PATH = _DEEPSEEK_VL2_DIR / "transformers_4_38_2"
-
-# Check for transformers_4_38_2/src/transformers/__init__.py structure
-if _TRANSFORMERS_PATH.exists() and (_TRANSFORMERS_PATH / "src" / "transformers" / "__init__.py").exists():
-    _local_transformers_path = str(_TRANSFORMERS_PATH / "src")
-    if _local_transformers_path not in sys.path:
-        sys.path.insert(0, _local_transformers_path)
-        env_path = os.environ.get("PYTHONPATH", "")
-        if _local_transformers_path not in env_path:
-            os.environ["PYTHONPATH"] = _local_transformers_path + os.pathsep + env_path
-
-
-# check if python version is above 3.10
 if sys.version_info >= (3, 10):
     print("Python version is above 3.10, patching the collections module.")
     # Monkey patch collections

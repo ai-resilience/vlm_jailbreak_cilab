@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 import yaml
 import torch
+from huggingface_hub import login
 
 # Don't import transformers at module level - import in load() method to use local version
 from .base import BaseMetric, unsafe_rate_from_flags
@@ -70,27 +71,23 @@ class LlamaGuardMetric(BaseMetric):
     
     def load(self) -> None:
         """Load LlamaGuard model and tokenizer."""
-        from huggingface_hub import login
-        
-        # Ensure local transformers is used by adding to path before import
+        # Setup local transformers path for this load operation
         _current_file = Path(__file__).resolve()
         _local_transformers_src = _current_file.parent / "llamaguard4" / "src"
-        if _local_transformers_src.exists():
-            if str(_local_transformers_src) not in sys.path:
-                sys.path.insert(0, str(_local_transformers_src))
-                print(f"✅ Using local transformers from: {_local_transformers_src}")
-            # Remove system transformers from modules to force reload from local
-            # This is necessary because Python will reuse already-loaded modules
-            # and we need to ensure the local version is used for Llama4ForConditionalGeneration
-            if 'transformers' in sys.modules:
-                del sys.modules['transformers']
-                # Also remove submodules to ensure clean reload
-                for key in list(sys.modules.keys()):
-                    if key.startswith('transformers.'):
-                        del sys.modules[key]
+        _local_transformers_path = str(_local_transformers_src)
         
-        # Import transformers from local path (or system if local doesn't exist)
-        from transformers import AutoProcessor, Llama4ForConditionalGeneration
+        _path_added = False
+        if _local_transformers_src.exists() and (_local_transformers_src / "transformers" / "__init__.py").exists():
+            if _local_transformers_path not in sys.path:
+                sys.path.insert(0, _local_transformers_path)
+                _path_added = True
+        
+        try:
+            from transformers import AutoProcessor, Llama4ForConditionalGeneration
+        finally:
+            # Remove local path after imports to avoid affecting other modules
+            if _path_added and _local_transformers_path in sys.path:
+                sys.path.remove(_local_transformers_path)
         
         # Login to HuggingFace if token is available
         hf_token = self._get_hf_token()
