@@ -4,6 +4,7 @@ import sys
 import os
 import argparse
 import json
+from pathlib import Path
 from tqdm import tqdm
 import torch
 
@@ -26,8 +27,8 @@ def parse_args():
                        help='Use text-only mode')
     parser.add_argument('--image', type=str, default='blank',
                        help='Image type to use (blank, panda, noise, etc.)')
-    parser.add_argument('--output_dir', type=str, default='./result/inference',
-                       help='Output directory')
+    parser.add_argument('--output_dir', type=str, default=None,
+                       help='Output directory (default: ../result/inference)')
     parser.add_argument('--max_new_tokens', type=int, default=128,
                        help='Maximum tokens to generate')
     return parser.parse_args()
@@ -35,6 +36,11 @@ def parse_args():
 
 def main():
     args = parse_args()
+    
+    # Set default output directory to external result folder
+    if args.output_dir is None:
+        project_root = Path(__file__).parent.parent.parent.resolve()
+        args.output_dir = str(project_root.parent / 'result' / 'inference')
     
     # Create output directory
     os.makedirs(args.output_dir, exist_ok=True)

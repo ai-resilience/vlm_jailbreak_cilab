@@ -1,9 +1,10 @@
 """PCA analysis utilities."""
 import numpy as np
 import torch
+import torch.nn.functional as F
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
-from typing import Tuple, List, Optional
+from typing import Tuple, List, Optional, Any
 
 
 def pca_basic(vectors: np.ndarray, top_k: int = 5) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
@@ -165,4 +166,42 @@ def pca_projection_dot_mean(
         return results
     
     raise ValueError("layer_indices must be int or 'all'")
+
+
+def weight_cosine(vector: np.ndarray, model: Any, tokenizer: Any, top_k: int = 10) -> Tuple[List[str], torch.Tensor]:
+    """Compute cosine similarity between PC1 vector and vocabulary embeddings.
+    
+    Args:
+        vector: numpy array or torch tensor of shape (hidden_dim,)
+        model: HuggingFace VLM model
+        tokenizer: associated tokenizer
+        top_k: number of most similar tokens to return
+        
+    Returns:
+        Tuple of (tokens, scores)
+        - tokens: List of top-k token strings
+        - scores: Tensor of cosine similarity scores
+    """
+    from src.models.base import find_lm_head
+    
+    # Convert vector to tensor if needed
+    if not isinstance(vector, torch.Tensor):
+        vector = torch.tensor(vector, dtype=torch.float32)
+    vector = vector.to(dtype=model.dtype, device=model.device)
+    
+    # Extract lm_head weights using unified function
+    lm_head = find_lm_head(model)
+    lm_weight = lm_head.weight.float()
+    
+    # Cosine similarity between vector and each vocab embedding
+    sim = F.cosine_similarity(lm_weight, vector.unsqueeze(0), dim=1)  # [vocab_size]
+    
+    # Top-k most similar tokens
+    topk = torch.topk(sim, k=top_k)
+    indices = topk.indices
+    scores = topk.values
+    
+    tokens = [tokenizer.decode([i.item()]) for i in indices.tolist()]
+    
+    return tokens, scores
 
