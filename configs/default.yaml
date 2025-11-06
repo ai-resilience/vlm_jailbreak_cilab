@@ -28,5 +28,5 @@ output:
   hook_dir: "./result/hook"
 
 huggingface:
-  token: "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"  # Set your HuggingFace token here or use environment variable HF_TOKEN
+  token:   # Set your HuggingFace token here or use environment variable HF_TOKEN
 

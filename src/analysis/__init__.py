@@ -5,7 +5,8 @@ from .pca import (
     get_safe_aligned_pc1,
     compute_anchor_pc1s,
     project_with_pc1,
-    pca_projection_dot_mean
+    pca_projection_dot_mean,
+    weight_cosine
 )
 from .hidden_states import (
     extract_hidden_states,
@@ -28,6 +29,7 @@ __all__ = [
     'compute_anchor_pc1s',
     'project_with_pc1',
     'pca_projection_dot_mean',
+    'weight_cosine',
     # Hidden states
     'extract_hidden_states',
     'compute_cosine_similarity',

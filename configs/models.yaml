@@ -3,44 +3,44 @@ models:
   llava:
     name: "LLaVA 1.5"
     path: "/mnt/server11_hard4/kihyun/mil/llava-1.5-13b-hf"
-    token_index: 2  # -2th token for analysis
-    key_layer: 22  # Key layer for intervention
+    safety_token_index: 2  # -2th token for analysis
+    safety_aware_layer: 22  # Key layer for intervention
     
   llava_next:
     name: "LLaVA-NeXT"
     path: "/mnt/server14_hard1/kihyun/llava-v1.6-mistral-7b-hf"
-    token_index: 4  # -4th token for analysis
-    key_layer: 18
+    safety_token_index: 4  # -4th token for analysis
+    safety_aware_layer: 18
     
   qwen:
     name: "Qwen2.5-VL"
     path: "/mnt/server14_hard1/kihyun/Qwen2.5-VL-7B-Instruct"
-    token_index: 2
-    key_layer: 19
+    safety_token_index: 2
+    safety_aware_layer: 19
     
   intern:
     name: "InternVL3"
     path: "/mnt/server14_hard1/kihyun/InternVL3-8B"
-    token_index: 5  # -5th token for analysis
-    key_layer: 20
+    safety_token_index: 5  # -5th token for analysis
+    safety_aware_layer: 20
     
   deepseek:
     name: "DeepSeek-VL"
     path: "/mnt/server14_hard1/kihyun/deepseek-vl-7b-chat"
-    token_index: 1
-    key_layer: 18
+    safety_token_index: 1
+    safety_aware_layer: 1
 
   deepseek2:
     name: "DeepSeek-VL2-small(MoE)"
     path: "/mnt/server14_hard1/kihyun/deepseek-vl2-small"
-    token_index: 1
-    key_layer: 1
+    safety_token_index: 1
+    safety_aware_layer: 1
 
   kimi:
     name: "Kimi-VL-A3B-instruct(MoE)"
     path: "/mnt/server14_hard1/kihyun/Kimi-VL-A3B-Instruct"
-    token_index: 1
-    key_layer: 1
+    safety_token_index: 1
+    safety_aware_layer: 1
 
   llamaguard4:
     name: "Llama-Guard-4-12B"

@@ -55,6 +55,31 @@ def find_num_hidden_layers(model: Any) -> int:
     raise ValueError("❌ Could not find any num_hidden_layers.")
 
 
+def find_lm_head(model: Any) -> Any:
+    """Find the language model head (lm_head) by trying multiple paths.
+    Args:
+        model: The model object
+    Returns:
+        The language model head layer
+    Raises:
+        ValueError: If no lm_head is found
+    """
+    for path in [
+        "lm_head",
+        "language_model.lm_head",
+        "language.lm_head",
+    ]:
+        try:
+            obj = model
+            for attr in path.split("."):
+                obj = getattr(obj, attr)
+            print(f"✅ Found lm_head at: model.{path}")
+            return obj
+        except AttributeError:
+            continue
+    raise ValueError("❌ Could not find any lm_head.")
+
+
 def _load_model_config(model_name: str) -> Optional[str]:
     """Load model path from configs/models.yaml.
     

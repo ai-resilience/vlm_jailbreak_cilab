@@ -3,6 +3,7 @@
 import sys
 import os
 import argparse
+from pathlib import Path
 
 # Add project root to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
@@ -24,14 +25,19 @@ def parse_args():
                         help='Metric name')
     parser.add_argument('--input', type=str, required=True,
                         help='Path to input predictions jsonl/json file')
-    parser.add_argument('--output_dir', type=str, default='./result/eval',
-                        help='Output directory for evaluation results')
+    parser.add_argument('--output_dir', type=str, default=None,
+                        help='Output directory for evaluation results (default: ../result/evaluation)')
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
 
+    # Set default output directory to external result folder
+    if args.output_dir is None:
+        project_root = Path(__file__).parent.parent.parent.resolve()
+        args.output_dir = str(project_root.parent / 'result' / 'evaluation')
+    
     # Create output directory
     os.makedirs(args.output_dir, exist_ok=True)
 

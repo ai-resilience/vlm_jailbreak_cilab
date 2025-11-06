@@ -5,6 +5,7 @@ import os
 import argparse
 import json
 import numpy as np
+from pathlib import Path
 from tqdm import tqdm
 import torch
 
@@ -16,16 +17,17 @@ from src.datasets import load_dataset
 from src.inference import generate_response
 from src.hooks import HookManager
 from src.analysis import extract_hidden_states, extract_token_hidden_states, pca_basic
+from src.models.base import find_num_hidden_layers, find_norm
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Run VLM inference with hooks")
     parser.add_argument('--model_name', type=str, required=True,
-                       choices=['llava', 'llava_next', 'intern', 'qwen', 'deepseek'],
+                       choices=['llava', 'llava_next', 'intern', 'qwen', 'deepseek', 'deepseek2', 'kimi'],
                        help='Model name')
     parser.add_argument('--dataset', type=str, required=True,
                        help='Dataset name')
-    parser.add_argument('--anchor_dataset', type=str, required=True,
+    parser.add_argument('--anchor_dataset', type=str, default="llmsafeguard",
                        help='Anchor dataset for computing PC1')
     parser.add_argument('--hook_layer', type=int, required=True,
                        help='Layer index to inject hook')
@@ -39,27 +41,17 @@ def parse_args():
                        help='Use text-only mode')
     parser.add_argument('--image', type=str, default='blank',
                        help='Image type to use')
-    parser.add_argument('--output_dir', type=str, default='./result/hook',
-                       help='Output directory')
+    parser.add_argument('--output_dir', type=str, default=None,
+                       help='Output directory (default: ../result/hook)')
     return parser.parse_args()
 
 
 def compute_pc1_directions(model, processor, model_name, anchor_dataset, hook_token, num_layers):
     """Compute PC1 directions from anchor dataset."""
-    from src.models.base import BaseVLM
     from src.inference.processor import build_prompt
     
     # Get norm layer
-    norm = None
-    for path in ["language_model.norm", "language_model.model.norm"]:
-        try:
-            obj = model
-            for attr in path.split("."):
-                obj = getattr(obj, attr)
-            norm = obj
-            break
-        except AttributeError:
-            continue
+    norm = find_norm(model)
     
     # Load anchor data
     print(f"Loading anchor dataset: {anchor_dataset}")
@@ -100,6 +92,11 @@ def compute_pc1_directions(model, processor, model_name, anchor_dataset, hook_to
 def main():
     args = parse_args()
     
+    # Set default output directory to external result folder
+    if args.output_dir is None:
+        project_root = Path(__file__).parent.parent.parent.resolve()
+        args.output_dir = str(project_root.parent / 'result' / 'hook')
+    
     # Create output directory
     os.makedirs(args.output_dir, exist_ok=True)
     
@@ -109,12 +106,7 @@ def main():
     model.eval()
     
     # Get number of layers
-    if hasattr(model.config, 'text_config'):
-        num_layers = model.config.text_config.num_hidden_layers
-    elif hasattr(model.config, 'llm_config'):
-        num_layers = model.config.llm_config.num_hidden_layers
-    else:
-        num_layers = model.config.language_config.num_hidden_layers
+    num_layers = find_num_hidden_layers(model)
     
     # Compute PC1 directions
     all_layer_eigen_vecs, anchor_labels = compute_pc1_directions(
