@@ -27,3 +27,6 @@ output:
   analysis_dir: "./result/analysis"
   hook_dir: "./result/hook"
 
+huggingface:
+  token: "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"  # Set your HuggingFace token here or use environment variable HF_TOKEN
+
