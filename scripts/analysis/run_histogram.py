@@ -4,6 +4,7 @@ import sys
 import os
 import argparse
 import numpy as np
+from pathlib import Path
 from tqdm import tqdm
 import torch
 
@@ -14,12 +15,13 @@ from src.models import load_model
 from src.datasets import load_dataset
 from src.analysis import extract_hidden_states, extract_token_hidden_states, plot_histogram
 from src.inference.processor import build_prompt
+from src.models.base import find_norm, find_num_hidden_layers
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Generate PC1 projection histogram")
     parser.add_argument('--model_name', type=str, required=True,
-                       choices=['llava', 'llava_next', 'intern', 'qwen', 'deepseek'],
+                       choices=['llava', 'llava_next', 'intern', 'qwen', 'deepseek', 'deepseek2', 'kimi'],
                        help='Model name')
     parser.add_argument('--dataset', type=str, required=True,
                        help='Dataset name')
@@ -31,13 +33,18 @@ def parse_args():
                        help='Token position to extract')
     parser.add_argument('--layer_index', type=str, default='all',
                        help='Layer index to visualize')
-    parser.add_argument('--output_dir', type=str, default='./result/histogram',
-                       help='Output directory')
+    parser.add_argument('--output_dir', type=str, default=None,
+                       help='Output directory (default: ../result/histogram)')
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
+    
+    # Set default output directory to external result folder
+    if args.output_dir is None:
+        project_root = Path(__file__).parent.parent.parent.resolve()
+        args.output_dir = str(project_root.parent / 'result' / 'histogram')
     
     # Create output directory
     os.makedirs(args.output_dir, exist_ok=True)
@@ -48,23 +55,8 @@ def main():
     model.eval()
     
     # Get norm layer and num layers
-    norm = None
-    for path in ["language_model.norm", "language_model.model.norm"]:
-        try:
-            obj = model
-            for attr in path.split("."):
-                obj = getattr(obj, attr)
-            norm = obj
-            break
-        except AttributeError:
-            continue
-    
-    if hasattr(model.config, 'text_config'):
-        num_layers = model.config.text_config.num_hidden_layers
-    elif hasattr(model.config, 'llm_config'):
-        num_layers = model.config.llm_config.num_hidden_layers
-    else:
-        num_layers = model.config.language_config.num_hidden_layers
+    norm = find_norm(model)
+    num_layers = find_num_hidden_layers(model)
     
     # Load dataset
     print(f"Loading dataset: {args.dataset}")
