@@ -26,10 +26,11 @@ def extract_hidden_states(
         List of hidden states per layer [layer_idx][batch, seq_len, hidden_dim]
     """
     inputs, attention_mask = build_prompt_fn(model, processor, model_name, image_path, prompt)
-    inputs.to(model.device, dtype=torch.bfloat16)
+
     
     if model_name == "deepseek2":
-        attention_mask = attention_mask.to(model.device)
+        inputs.to(model.device)
+        attention_mask.to(model.device)
         with torch.no_grad():
             out = model.language(
                 inputs_embeds=inputs,
@@ -37,7 +38,76 @@ def extract_hidden_states(
                 return_dict=True,
                 output_hidden_states=True
             )
+
+    elif model_name == "intern":
+        from ..models.intern.preprocess import load_image
+    
+        prompt_text = inputs[1]
+        image_path = inputs[0]
+        
+        if image_path is not None:
+            pixel_values = load_image(image_path, max_num=12).to(torch.bfloat16).to(model.device)
+        else:
+            pixel_values = None
+
+        # Prepare template and query (similar to model.chat logic)
+        if pixel_values is not None and '<image>' not in prompt_text:
+            prompt_text = '<image>\n' + prompt_text
+        
+        num_patches_list = [pixel_values.shape[0]] if pixel_values is not None else []
+        
+        # Set img_context_token_id
+        IMG_CONTEXT_TOKEN = '<IMG_CONTEXT>'
+        model.img_context_token_id = processor.convert_tokens_to_ids(IMG_CONTEXT_TOKEN)
+        
+        # Build template using model's conv_template
+        template = model.conv_template.copy()
+        template.system_message = model.system_message
+        template.append_message(template.roles[0], prompt_text)
+        template.append_message(template.roles[1], None)
+        query = template.get_prompt()
+        
+        # Insert image tokens
+        IMG_START_TOKEN = '<img>'
+        IMG_END_TOKEN = '</img>'
+        for num_patches in num_patches_list:
+            image_tokens = IMG_START_TOKEN + IMG_CONTEXT_TOKEN * model.num_image_token * num_patches + IMG_END_TOKEN
+            query = query.replace('<image>', image_tokens, 1)
+        
+        # Tokenize
+        model_inputs = processor(query, return_tensors='pt')
+        input_ids = model_inputs['input_ids'].to(model.device)
+        attention_mask = model_inputs.get('attention_mask', None)
+        if attention_mask is not None:
+            attention_mask = attention_mask.to(model.device)
+        
+        # Create image_flags (1 for image tokens, 0 for text tokens)
+        image_flags = torch.ones_like(input_ids).unsqueeze(-1) if pixel_values is not None else torch.zeros_like(input_ids).unsqueeze(-1)
+        
+        # Call model.forward directly to get hidden states
+        with torch.no_grad():
+            if pixel_values is not None:
+                # Image + text case: use model.forward
+                out = model(
+                    pixel_values=pixel_values,
+                    input_ids=input_ids,
+                    attention_mask=attention_mask,
+                    image_flags=image_flags,
+                    output_hidden_states=True,
+                    return_dict=True
+                )
+            else:
+                # Text-only case: call language_model directly
+                # No image tokens should be in input_ids for text-only
+                out = model.language_model(
+                    input_ids=input_ids,
+                    attention_mask=attention_mask,
+                    output_hidden_states=True,
+                    return_dict=True
+                )
+   
     else:
+        inputs.to(model.device)
         with torch.no_grad():
             out = model(**inputs, return_dict=True, output_hidden_states=True)
     

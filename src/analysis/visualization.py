@@ -31,18 +31,35 @@ def pca_graph(
         pca = PCA(n_components=2)
         vec_2d = pca.fit_transform(vecs)
         
-        plt.figure(figsize=(8, 6))
+        # Define colors and markers for better visibility
+        label_colors = {0: "red", 1: "blue", 2: "orange", 3: "green", 4: "purple"}
+        label_markers = {0: "o", 1: "s", 2: "^", 3: "D", 4: "v"}
+        label_names = {0: "Unsafe (0)", 1: "Safe (1)", 2: "Label 2", 3: "Label 3", 4: "Label 4"}
+        
+        plt.figure(figsize=(10, 8))
         for label in np.unique(labels_):
             idxs = np.where(labels_ == label)[0]
-            plt.scatter(vec_2d[idxs, 0], vec_2d[idxs, 1], label=f"label={label}", alpha=0.6, s=5)
+            color = label_colors.get(label, "gray")
+            marker = label_markers.get(label, "o")
+            name = label_names.get(label, f"Label {label}")
+            plt.scatter(
+                vec_2d[idxs, 0], vec_2d[idxs, 1], 
+                label=name, 
+                alpha=0.8, 
+                s=30,  # Increased marker size
+                c=color,
+                marker=marker,
+                edgecolors='black',  # Add black edge for better visibility
+                linewidths=0.5
+            )
         
-        plt.title(f"2D PCA of Layer {pca_layer_index}")
-        plt.xlabel("PC 1")
-        plt.ylabel("PC 2")
-        plt.legend()
-        plt.grid(True)
+        plt.title(f"2D PCA of Layer {pca_layer_index}", fontsize=14, fontweight='bold')
+        plt.xlabel("PC 1", fontsize=12)
+        plt.ylabel("PC 2", fontsize=12)
+        plt.legend(fontsize=10, framealpha=0.9)
+        plt.grid(True, alpha=0.3)
         plt.tight_layout()
-        plt.savefig(filename, dpi=300)
+        plt.savefig(filename, dpi=300, bbox_inches='tight')
         plt.close()
         
     elif isinstance(pca_layer_index, str) and pca_layer_index.lower() == "all":
@@ -51,11 +68,16 @@ def pca_graph(
         num_layers = vecs.shape[0]
         grid_size = int(np.ceil(np.sqrt(num_layers)))
         
-        # Color by labels
+        # Color by labels with better visibility
         unique_labels = sorted(np.unique(labels_))
-        cmap = cm.get_cmap("tab10", len(unique_labels))
-        color_map = {label: cmap(i) for i, label in enumerate(unique_labels)}
+        label_colors = {0: "red", 1: "blue", 2: "orange", 3: "green", 4: "purple"}
+        color_map = {label: label_colors.get(label, cm.get_cmap("tab10")(i)) 
+                    for i, label in enumerate(unique_labels)}
         colors = [color_map[l] for l in labels_]
+        
+        # Use different markers for different labels
+        label_markers = {0: "o", 1: "s", 2: "^", 3: "D", 4: "v"}
+        markers = [label_markers.get(l, "o") for l in labels_]
         
         fig, axes = plt.subplots(grid_size, grid_size, figsize=(grid_size*3, grid_size*3))
         axes = axes.flatten()
@@ -64,24 +86,44 @@ def pca_graph(
         for idx in range(num_layers):
             ax = axes[idx]
             vec_2d = pca.fit_transform(vecs[idx])
-            ax.scatter(vec_2d[:, 0], vec_2d[:, 1], c=colors, alpha=0.7, s=5)
-            ax.set_title(f"Layer {idx}")
-            ax.axis("off")
+            
+            # Plot each label separately for better control
+            for label in unique_labels:
+                label_idxs = np.where(labels_ == label)[0]
+                if len(label_idxs) > 0:
+                    ax.scatter(
+                        vec_2d[label_idxs, 0], vec_2d[label_idxs, 1], 
+                        c=[color_map[label]], 
+                        alpha=0.8, 
+                        s=20,  # Increased marker size
+                        marker=label_markers.get(label, "o"),
+                        edgecolors='black',
+                        linewidths=0.3
+                    )
+            
+            ax.set_title(f"Layer {idx}", fontsize=10, fontweight='bold')
+            ax.grid(True, alpha=0.2)
+            ax.set_xticks([])
+            ax.set_yticks([])
         
         for idx in range(num_layers, grid_size * grid_size):
             fig.delaxes(axes[idx])
         
-        # Legend
+        # Legend with better visibility
+        label_names = {0: "Unsafe (0)", 1: "Safe (1)", 2: "Label 2", 3: "Label 3", 4: "Label 4"}
         handles = [
-            Line2D([0], [0], marker='o', color='w', label=f"{label}",
-                   markerfacecolor=color_map[label], markersize=6)
+            Line2D([0], [0], marker=label_markers.get(label, 'o'), color='w', 
+                   label=label_names.get(label, f"Label {label}"),
+                   markerfacecolor=color_map[label], markersize=10,
+                   markeredgecolor='black', markeredgewidth=0.5)
             for label in unique_labels
         ]
-        fig.legend(handles=handles, loc="lower center", ncol=4, fontsize=8, title="Label")
+        fig.legend(handles=handles, loc="lower center", ncol=min(4, len(unique_labels)), 
+                  fontsize=10, title="Label", framealpha=0.9)
         plt.subplots_adjust(bottom=0.1)
         plt.tight_layout()
         os.makedirs(os.path.dirname(filename), exist_ok=True)
-        plt.savefig(filename, dpi=300)
+        plt.savefig(filename, dpi=300, bbox_inches='tight')
         plt.close()
     
     print(f"[✓] PCA plot saved to {filename}")

@@ -80,6 +80,34 @@ def find_lm_head(model: Any) -> Any:
     raise ValueError("❌ Could not find any lm_head.")
 
 
+def find_layers(model: Any) -> Any:
+    """Find the layers module in the model by trying multiple paths.
+    Args:
+        model: The model object
+    Returns:
+        The layers module (e.g., nn.ModuleList of transformer layers)
+    Raises:
+        ValueError: If no layers module is found
+    """
+    for path in [
+        "language_model.layers",
+        "language_model.model.layers",
+        "language.layers",
+        "language.model.layers",
+    ]:
+        try:
+            obj = model
+            for attr in path.split("."):
+                obj = getattr(obj, attr)
+            # Check if it's actually a layers module (has __len__ and __getitem__)
+            if hasattr(obj, '__len__') and hasattr(obj, '__getitem__'):
+                print(f"✅ Found layers at: model.{path}")
+                return obj
+        except (AttributeError, TypeError):
+            continue
+    raise ValueError("❌ Could not find any layers module.")
+
+
 def _load_model_config(model_name: str) -> Optional[str]:
     """Load model path from configs/models.yaml.
     

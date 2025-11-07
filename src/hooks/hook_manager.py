@@ -1,6 +1,7 @@
 """Hook manager for injecting activations during model forward pass."""
 import torch
 from typing import List, Dict, Any
+from ..models.base import find_layers
 
 
 class HookManager:
@@ -35,8 +36,11 @@ class HookManager:
             pc1_vector, alpha, max_uses, token_indices
         )
         
+        # Find layers module (handles both language_model.layers and language_model.model.layers)
+        layers = find_layers(model)
+        
         # Register hook
-        h = model.language_model.layers[layer_indices].register_forward_hook(hook_fn)
+        h = layers[layer_indices].register_forward_hook(hook_fn)
         state['handle'] = h
         
         self.handles.append(h)

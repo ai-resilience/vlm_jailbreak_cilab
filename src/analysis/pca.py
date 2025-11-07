@@ -201,7 +201,8 @@ def weight_cosine(vector: np.ndarray, model: Any, tokenizer: Any, top_k: int = 1
     indices = topk.indices
     scores = topk.values
     
-    tokens = [tokenizer.decode([i.item()]) for i in indices.tolist()]
+    # Convert to list - indices.tolist() already returns Python ints, no need for .item()
+    tokens = [tokenizer.decode([i]) for i in indices.tolist()]
     
     return tokens, scores
 
