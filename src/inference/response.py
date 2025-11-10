@@ -47,7 +47,7 @@ def generate_response(
         
         return response
     
-    elif model_name in ["deepseek", "deepseek2"]:
+    elif model_name in ["deepseek"]:
         inputs.to(model.device, dtype=torch.bfloat16)
         attention_mask = attention_mask.to(model.device)
         
@@ -65,6 +65,36 @@ def generate_response(
                 use_cache=True
             )
             out = out[0]
+        
+        response = processor.tokenizer.decode(out, skip_special_tokens=True)
+        return response
+
+    elif model_name in ["deepseek2"]:
+        prepare_inputs = attention_mask
+        inputs_embeds, past_key_values = model.incremental_prefilling(
+                    input_ids=prepare_inputs.input_ids,
+                    images=prepare_inputs.images,
+                    images_seq_mask=prepare_inputs.images_seq_mask,
+                    images_spatial_crop=prepare_inputs.images_spatial_crop,
+                    attention_mask=prepare_inputs.attention_mask,
+                    chunk_size=512 # prefilling size
+                    )
+        
+        out = model.language.generate(
+                inputs_embeds=inputs_embeds,
+                input_ids=prepare_inputs.input_ids,
+                images=prepare_inputs.images,
+                images_seq_mask=prepare_inputs.images_seq_mask,
+                images_spatial_crop=prepare_inputs.images_spatial_crop,
+                attention_mask=prepare_inputs.attention_mask,
+                past_key_values=past_key_values,
+                pad_token_id=processor.tokenizer.eos_token_id,
+                bos_token_id=processor.bos_token_id,
+                eos_token_id=processor.eos_token_id,
+                max_new_tokens=128,
+                do_sample=False,
+                use_cache=True,)
+        out = out[0]
         
         response = processor.tokenizer.decode(out, skip_special_tokens=True)
         return response

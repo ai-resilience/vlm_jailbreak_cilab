@@ -107,7 +107,7 @@ def build_prompt(
             text = processor(conversations=message, images=image, force_batchify=True, system_prompt="").to(model.device)
         
         input_embeds = model.prepare_inputs_embeds(**text)
-        return input_embeds, text.attention_mask
+        return input_embeds, text
     
     elif model_name == "qwen":
         from ..models.qwen.vision_process import process_vision_info
