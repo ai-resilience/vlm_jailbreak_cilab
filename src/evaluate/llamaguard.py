@@ -4,6 +4,8 @@ from pathlib import Path
 import sys
 import yaml
 import torch
+import json
+import os
 from huggingface_hub import login
 
 # Don't import transformers at module level - import in load() method to use local version
@@ -142,12 +144,85 @@ class LlamaGuardMetric(BaseMetric):
                 {"role": "assistant", "content": assistant_content}
                 ]
     
-    def evaluate(self, entries: List[Dict]) -> Tuple[List[bool], float]:
+    def _load_dataset_prompts(self, dataset_name: str) -> Optional[List[str]]:
+        """Load prompts for special datasets (Figstep, mm_safety).
+        
+        Args:
+            dataset_name: Name of the dataset
+            
+        Returns:
+            List of prompts or None if not a special dataset
+        """
+        # Check if it's a mm_safety dataset
+        if dataset_name in ["mm_sd_typo", "mm_typo"]:
+            # Load prompts from mm_text dataset
+            try:
+                from ..datasets import load_dataset
+                prompts, _, _, _ = load_dataset("mm_text", no_image=True)
+                return prompts
+            except Exception as e:
+                print(f"⚠️ Warning: Could not load mm_text prompts: {e}")
+                return None
+        
+        # Check if it's Figstep
+        if dataset_name == "Figstep":
+            # Load prompts from safebench_questions.jsonl
+            try:
+                current_file = Path(__file__).resolve()
+                project_root = current_file.parent.parent.parent
+                questions_path = project_root / "dataset" / "FigStep" / "data" / "question" / "safebench_questions.jsonl"
+                
+                if questions_path.exists():
+                    prompts = []
+                    with open(questions_path, "r", encoding="utf-8") as f:
+                        for line in f:
+                            data = json.loads(line)
+                            prompts.append(data.get("question", ""))
+                    return prompts
+                else:
+                    print(f"⚠️ Warning: safebench_questions.jsonl not found at {questions_path}")
+                    return None
+            except Exception as e:
+                print(f"⚠️ Warning: Could not load Figstep prompts: {e}")
+                return None
+        
+        return None
+    
+    def _load_dataset_images(self, dataset_name: str) -> Optional[List[str]]:
+        """Load images for special datasets.
+        
+        Args:
+            dataset_name: Name of the dataset
+            
+        Returns:
+            List of image paths or None if not a special dataset
+        """
+        # Check if it's a mm_safety dataset
+        if dataset_name in ["mm_sd_typo", "mm_typo", "mm_text", "Figstep"]:
+            try:
+                from ..datasets import load_dataset
+                _, _, imgs, _ = load_dataset(dataset_name, no_image=False)
+                return imgs
+            except Exception as e:
+                print(f"⚠️ Warning: Could not load images for {dataset_name}: {e}")
+                return None
+        
+        return None
+    
+    def evaluate(
+        self, 
+        entries: List[Dict],
+        dataset_name: Optional[str] = None,
+        is_image: bool = False,
+        image_dataset: Optional[str] = None
+    ) -> Tuple[List[bool], float]:
         """Evaluate entries using LlamaGuard (Unsafe Rate only).
         
         Args:
             entries: List of entries with 'prompt' and 'response' fields
-            detect_unsafe: If True, detect unsafe (default), else detect refusal
+            dataset_name: Name of the dataset (for special handling)
+            is_image: Whether the dataset contains images
+            image_dataset: Name of the image dataset (for mm_safety datasets)
             
         Returns:
             Tuple of (flags: List[bool], rate: float)
@@ -155,11 +230,38 @@ class LlamaGuardMetric(BaseMetric):
         if self.model is None:
             self.load()
         
+        # Load special prompts if needed
+        special_prompts = None
+        if dataset_name:
+            special_prompts = self._load_dataset_prompts(dataset_name)
+        
+        # Load images if needed (only if entry doesn't have image)
+        # This is needed because inference results may not include image paths
+        dataset_images = None
+        if is_image:
+            # Check if entries already have images
+            has_images_in_entries = any(entry.get("image") for entry in entries)
+            if not has_images_in_entries:
+                # Load images from dataset if entries don't have them
+                img_dataset = image_dataset or dataset_name
+                if img_dataset:
+                    dataset_images = self._load_dataset_images(img_dataset)
+        
         flags = []
-        for entry in entries:
-            prompt = entry.get("prompt", "")
+        for idx, entry in enumerate(entries):
+            # Use special prompt if available, otherwise use entry prompt
+            if special_prompts and idx < len(special_prompts):
+                prompt = special_prompts[idx]
+            else:
+                prompt = entry.get("prompt", "")
+            
             response = entry.get("response", "")
-            image = entry.get("image")
+            
+            # Use dataset images if loaded, otherwise use entry image
+            if dataset_images and idx < len(dataset_images):
+                image = dataset_images[idx]
+            else:
+                image = entry.get("image")
             
             chat = self._template(prompt, response, image)
             mod_output = self._moderate(chat)

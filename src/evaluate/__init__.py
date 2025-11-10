@@ -54,6 +54,9 @@ def load_metric(metric_name: str, **kwargs) -> BaseMetric:
 def evaluate_with_metric(
     metric_name: str,
     entries: List[Dict],
+    dataset_name: Optional[str] = None,
+    is_image: bool = False,
+    image_dataset: Optional[str] = None,
     **metric_kwargs
 ) -> Tuple[List[bool], float]:
     """Evaluate entries using a metric.
@@ -61,6 +64,9 @@ def evaluate_with_metric(
     Args:
         metric_name: Name of the metric
         entries: List of entries to evaluate
+        dataset_name: Name of the dataset (for special handling in LlamaGuard)
+        is_image: Whether the dataset contains images (for LlamaGuard)
+        image_dataset: Name of the image dataset (for mm_safety datasets in LlamaGuard)
         **metric_kwargs: Additional metric-specific arguments
         
     Returns:
@@ -68,6 +74,13 @@ def evaluate_with_metric(
     """
     metric = load_metric(metric_name, **metric_kwargs)
     metric.load()
+    
+    # Pass special parameters to LlamaGuard evaluate method
+    if metric_name == 'llamaguard4':
+        from .llamaguard import LlamaGuardMetric
+        if isinstance(metric, LlamaGuardMetric):
+            return metric.evaluate(entries, dataset_name=dataset_name, is_image=is_image, image_dataset=image_dataset)
+    
     return metric.evaluate(entries)
 
 

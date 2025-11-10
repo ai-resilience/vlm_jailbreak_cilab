@@ -5,8 +5,8 @@
 
 gpu_id="0"
 models=("llava" "llava_next" "intern" "qwen" "deepseek2" "kimi")
-datasets=("Figstep" "mm_sd_typo")
-images=("blank") # "white" "panda" "noise"
+datasets=("StrongREJECT") # "Figstep" "mm_sd_typo"
+images=("blank" "white") # "panda" "noise"
 modals=("image") #  "text_only"
 metrics=("keyword") # "llamaguard4"
 
