@@ -5,3 +5,4 @@ pip install scikit-learn==1.7.2
 pip install matplotlib==3.10.7
 pip install tiktoken==0.12.0
 pip install ipdb
+pip install gpustat

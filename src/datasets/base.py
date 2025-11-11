@@ -2,6 +2,7 @@
 from abc import ABC, abstractmethod
 from typing import Tuple, List, Optional
 from dataclasses import dataclass
+import os
 
 
 @dataclass
@@ -33,8 +34,10 @@ class BaseDataset(ABC):
         """Get image path based on configuration."""
         if self.no_image:
             return None
-            
-        if self.image == "blank":
+        
+        if os.path.exists(self.image):
+            return self.image
+        elif self.image == "blank":
             return f"dataset/blank/blank_{num}.png"
         elif self.image == "panda":
             return "dataset/clean.jpeg"
@@ -45,5 +48,5 @@ class BaseDataset(ABC):
         elif self.image == "nsfw":
             return f"dataset/nsfw/temp_image_{num}.jpg"
         else:
-            return None
+            raise ValueError(f"Invalid image type: {self.image}")
 

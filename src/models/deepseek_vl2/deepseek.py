@@ -16,7 +16,7 @@ class DeepSeek2Model(BaseVLM):
         """Load DeepSeek-VL v2 model."""
         # Setup local transformers path for this load operation
         from pathlib import Path
-        _deepseek_vl2_dir = Path(__file__).parent.parent
+        _deepseek_vl2_dir = Path(__file__).parent
         _transformers_path = _deepseek_vl2_dir / "transformers_4_38_2"
         _local_transformers_path = str(_transformers_path / "src")
         

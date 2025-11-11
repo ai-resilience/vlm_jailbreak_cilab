@@ -13,7 +13,7 @@ This repository provides tools for:
 ## 🏗️ Project Structure
 
 ```
-vlm_refactoring/
+lvlm_jailbreak/
 ├── src/                          # Core library
 │   ├── models/                   # Model implementations
 │   │   ├── base.py              # Base model interface
@@ -66,7 +66,9 @@ vlm_refactoring/
 # Clone the repository
 cd vlm_refactoring
 
-# Install dependencies
+# create conda env
+conda create -n vlm_safety python=3.10 -y
+conda activate vlm_safety
 bash env_setting.sh
 
 ```
