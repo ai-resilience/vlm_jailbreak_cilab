@@ -114,6 +114,16 @@ REFUSAL_PATTERNS = [
     r"\bi'?m programmed .*",
     r"\bi'?m unable to.*",
     r"\bi am unable to.*",
+    r"\dangeruous and illegal.*",
+    r"\dangeruous and unethical.*",
+    r"\dangeruous and not acceptable.*",
+    r"\dangeruous and not advisable.*",
+    r"\dangeruous and not safe.*",
+    r"\dangeruous and not ethical.*",
+    r"\dangeruous and not legal.*",
+    r"\dangeruous and not acceptable.*",
+    r"\dangeruous and not advisable.*",
+    r"\dangeruous and not safe.*",
 ]
 
 

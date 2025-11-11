@@ -63,16 +63,22 @@ def main():
     model, processor, tokenizer = load_model(args.model_name)
     model.eval()
     
+    # Determine if dataset has its own images
+    # mm_safety datasets (mm_text, mm_typo, mm_sd_typo) and Figstep have their own images
+    datasets_with_images = ["mm_text", "mm_typo", "mm_sd_typo", "Figstep"]
+    has_dataset_images = args.dataset in datasets_with_images
+    
+    # Always use image mode (resolution adjustment requires images)
     # Load dataset
     print(f"Loading dataset: {args.dataset}")
     prompts, labels, imgs, types = load_dataset(
         args.dataset,
-        no_image=args.no_image,
+        no_image=False,  # Always use images for resolution adjustment
         image=args.image
     )
     
-    # Determine modality string
-    modality = "text_only" if args.no_image else "image"
+    # Always image mode
+    modality = "image"
     
     # Get resolutions for this model
     resolutions = get_resolutions(args.model_name)
@@ -81,11 +87,15 @@ def main():
     temp_dir = os.path.join(args.output_dir, f"temp_{args.model_name}")
     os.makedirs(temp_dir, exist_ok=True)
     
+    # Create model/dataset directory structure
+    model_dataset_dir = os.path.join(args.output_dir, args.model_name, args.dataset)
+    os.makedirs(model_dataset_dir, exist_ok=True)
+    
     # Run inference for each resolution
     for resolution in resolutions:
         # Image mode: process each resolution
         output_file = os.path.join(
-            args.output_dir,
+            model_dataset_dir,
             f"{args.model_name}_{modality}_{args.dataset}_response_{resolution}.jsonl"
         )
         

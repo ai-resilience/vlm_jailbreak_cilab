@@ -18,6 +18,7 @@ def find_norm(model: Any) -> Any:
         "language_model.norm",
         "language_model.model.norm",
         "language.model.norm",
+        "model.norm"
     ]:
         try:
             obj = model
@@ -43,6 +44,7 @@ def find_num_hidden_layers(model: Any) -> int:
         "config.language_config.num_hidden_layers",
         "config.llm_config.num_hidden_layers",
         "config.text_config.num_hidden_layers",
+        "config.num_hidden_layers",
     ]:
         try:
             obj = model

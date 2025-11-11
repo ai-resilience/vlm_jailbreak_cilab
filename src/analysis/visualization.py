@@ -12,7 +12,8 @@ def pca_graph(
     vectors: np.ndarray,
     labels: np.ndarray,
     pca_layer_index: int,
-    save_path: str = "./result/pca.png"
+    save_path: str = "./result/pca.png",
+    label_names: Optional[Dict[int, str]] = None
 ) -> None:
     """Create PCA visualization.
     
@@ -21,9 +22,18 @@ def pca_graph(
         labels: Labels for coloring
         pca_layer_index: Layer index to visualize, or "all" for grid
         save_path: Path to save figure
+        label_names: Optional custom label names dict (e.g., {0: "Not Refused", 1: "Refused"})
     """
     labels_ = np.array(labels)
     filename = save_path
+    
+    # Default label names
+    default_label_names = {0: "Unsafe (0)", 1: "Safe (1)", 2: "Label 2", 3: "Label 3", 4: "Label 4"}
+    if label_names is not None:
+        # Merge custom names with defaults
+        final_label_names = {**default_label_names, **label_names}
+    else:
+        final_label_names = default_label_names
     
     if isinstance(pca_layer_index, int):
         # Single layer PCA
@@ -34,14 +44,13 @@ def pca_graph(
         # Define colors and markers for better visibility
         label_colors = {0: "red", 1: "blue", 2: "orange", 3: "green", 4: "purple"}
         label_markers = {0: "o", 1: "s", 2: "^", 3: "D", 4: "v"}
-        label_names = {0: "Unsafe (0)", 1: "Safe (1)", 2: "Label 2", 3: "Label 3", 4: "Label 4"}
         
         plt.figure(figsize=(10, 8))
         for label in np.unique(labels_):
             idxs = np.where(labels_ == label)[0]
             color = label_colors.get(label, "gray")
             marker = label_markers.get(label, "o")
-            name = label_names.get(label, f"Label {label}")
+            name = final_label_names.get(label, f"Label {label}")
             plt.scatter(
                 vec_2d[idxs, 0], vec_2d[idxs, 1], 
                 label=name, 
@@ -110,10 +119,9 @@ def pca_graph(
             fig.delaxes(axes[idx])
         
         # Legend with better visibility
-        label_names = {0: "Unsafe (0)", 1: "Safe (1)", 2: "Label 2", 3: "Label 3", 4: "Label 4"}
         handles = [
             Line2D([0], [0], marker=label_markers.get(label, 'o'), color='w', 
-                   label=label_names.get(label, f"Label {label}"),
+                   label=final_label_names.get(label, f"Label {label}"),
                    markerfacecolor=color_map[label], markersize=10,
                    markeredgecolor='black', markeredgewidth=0.5)
             for label in unique_labels

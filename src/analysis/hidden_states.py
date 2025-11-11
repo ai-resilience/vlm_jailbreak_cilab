@@ -41,7 +41,7 @@ def extract_hidden_states(
 
     elif model_name == "intern":
         from ..models.intern.preprocess import load_image
-    
+        
         prompt_text = inputs[1]
         image_path = inputs[0]
         
@@ -81,8 +81,30 @@ def extract_hidden_states(
         if attention_mask is not None:
             attention_mask = attention_mask.to(model.device)
         
-        # Create image_flags (1 for image tokens, 0 for text tokens)
-        image_flags = torch.ones_like(input_ids).unsqueeze(-1) if pixel_values is not None else torch.zeros_like(input_ids).unsqueeze(-1)
+        # Create image_flags for InternVL3 forward method
+        # In forward(), image_flags is used as: vit_embeds[image_flags == 1]
+        # where vit_embeds has shape [vit_batch_size, num_tokens, hidden_size]
+        # 
+        # IMPORTANT: image_flags is NOT about text sequence token positions!
+        # It's about which images in pixel_values are actually used.
+        # After squeeze(-1), image_flags should have shape [vit_batch_size, ...]
+        # where the first dimension indicates which images are used (1) or not (0).
+        #
+        # For our use case, all images in pixel_values are used, so we create
+        # image_flags with shape [vit_batch_size, 1, 1] where all values are 1.
+        if pixel_values is not None:
+            vit_batch_size = pixel_values.shape[0]
+            text_batch_size, seq_len = input_ids.shape
+            
+            # image_flags should indicate which images are used
+            # After squeeze(-1) in forward(), it should become [vit_batch_size] (1D)
+            # so that vit_embeds[image_flags == 1] can index the first dimension correctly
+            # Since all images are used, create all-ones with shape [vit_batch_size, 1]
+            # After squeeze(-1): [vit_batch_size] -> first dim used for indexing vit_embeds
+            image_flags = torch.ones(vit_batch_size, 1, dtype=torch.long, device=input_ids.device)
+        else:
+            # Text-only: create zeros with shape matching input_ids
+            image_flags = torch.zeros_like(input_ids).unsqueeze(-1)
         
         # Call model.forward directly to get hidden states
         with torch.no_grad():
@@ -105,7 +127,7 @@ def extract_hidden_states(
                     output_hidden_states=True,
                     return_dict=True
                 )
-   
+
     else:
         inputs.to(model.device)
         with torch.no_grad():

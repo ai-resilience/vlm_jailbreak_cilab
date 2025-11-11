@@ -11,8 +11,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 # Configuration
 models = ["kimi", "llava_next", "intern", "qwen", "deepseek2"]
-datasets = ["mm_sd_typo", "Figstep"]
-image_types = ["blank"]  # Optional: filter by image type
+datasets = ["StrongREJECT"]
+image_types = ["white", "blank"]  # Optional: filter by image type
 metrics = ["keyword"]  # Metrics to plot /  "llamaguard4"
 
 # Base directory (relative to project root)
@@ -23,12 +23,20 @@ OUTPUT_DIR = "../result/plots"
 def extract_resolution_from_filename(filename: str) -> int:
     """Extract resolution from filename.
     
-    Pattern: {model}_{modality}_{dataset}_response_{resolution}_{metric}_result.txt
-    Example: deepseek2_image_Figstep_response_768_keyword_result.txt
+    Pattern: {model}_{modality}_{dataset}_response_{image_type}_{resolution}_{metric}_result.txt
+    Example: deepseek2_image_StrongREJECT_response_blank_1152_keyword_result.txt
     """
-    match = re.search(r"response_(\d+)_", filename)
+    # Try pattern with image type: response_{image_type}_{resolution}_{metric}
+    # Match the number before the metric name
+    match = re.search(r"response_(?:blank|white|panda|noise)_(\d+)_(?:keyword|llamaguard4)", filename)
     if match:
         return int(match.group(1))
+    
+    # Fallback: try pattern without image type: response_{resolution}_{metric}
+    match = re.search(r"response_(\d+)_(?:keyword|llamaguard4)", filename)
+    if match:
+        return int(match.group(1))
+    
     return None
 
 
@@ -117,7 +125,7 @@ def plot_resolution_vs_rate(
             continue
         
         x_pos = range(len(resolutions))
-        label = f"{img_type.capitalize()}" if img_type else "All"
+        label = f"{img_type.capitalize()}"
         plt.plot(x_pos, rates, marker='o', label=label, linewidth=2, markersize=8)
         plt.xticks(x_pos, resolutions)
     
@@ -160,36 +168,51 @@ def main():
             for metric in metrics:
                 # Results organized by image type
                 results_by_image_type = {img_type: {} for img_type in image_types}
-                results_by_image_type[None] = {}  # For files without image type
                 
                 # Find all result files for this metric
+                # Pattern: {model}_image_{dataset}_response_{image_type?}_{resolution}_{metric}_result.txt
                 pattern = re.compile(
-                    rf"{re.escape(model)}_.*_{re.escape(dataset)}_response_.*_{re.escape(metric)}_result\.txt$"
+                    rf"{re.escape(model)}_image_{re.escape(dataset)}_response_.*_{re.escape(metric)}_result\.txt$"
                 )
                 
+                matched_files = []
                 for fname in os.listdir(base_dir):
+                    if not fname.endswith(f"_{metric}_result.txt"):
+                        continue
+                    
                     if not pattern.match(fname):
                         continue
+                    
+                    matched_files.append(fname)
                     
                     # Extract resolution
                     resolution = extract_resolution_from_filename(fname)
                     if resolution is None:
+                        print(f"    ⚠️  Could not extract resolution from: {fname}")
                         continue
                     
                     # Extract image type (if present)
                     img_type = extract_image_type_from_filename(fname)
+                    
+                    # Skip if no image type found
+                    if not img_type:
+                        continue
                     
                     # Extract rate
                     filepath = os.path.join(base_dir, fname)
                     rate = extract_rate_from_file(filepath, metric)
                     
                     if rate is None:
+                        print(f"    ⚠️  Could not extract rate from: {fname}")
                         continue
                     
-                    # Store result
-                    if img_type:
-                        results_by_image_type[img_type][resolution] = rate
-                    results_by_image_type[None][resolution] = rate
+                    # Store result (only for files with image type)
+                    results_by_image_type[img_type][resolution] = rate
+                
+                if not matched_files:
+                    print(f"  ⚠️  No files matched pattern for {metric}")
+                else:
+                    print(f"  📊 Found {len(matched_files)} files for {metric}")
                 
                 # Generate plot
                 if any(results_by_image_type.values()):
