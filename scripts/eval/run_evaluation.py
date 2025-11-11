@@ -46,9 +46,39 @@ def main():
     entries = load_entries(args.input)
     print(f"✅ Loaded {len(entries)} entries")
 
+    # Extract dataset name from input filename for special handling
+    dataset_name = None
+    is_image = False
+    image_dataset = None
+    
+    input_basename = os.path.basename(args.input)
+    
+    # Check for special datasets
+    if "Figstep" in input_basename or "figstep" in input_basename.lower():
+        dataset_name = "Figstep"
+    elif "mm_sd_typo" in input_basename:
+        dataset_name = "mm_sd_typo"
+        image_dataset = "mm_sd_typo"
+    elif "mm_typo" in input_basename:
+        dataset_name = "mm_typo"
+        image_dataset = "mm_typo"
+    elif "mm_text" in input_basename:
+        dataset_name = "mm_text"
+        image_dataset = "mm_text"
+    
     # Evaluate
     print(f"🚀 Evaluating with metric: {args.metric}")
-    flags, rate = evaluate_with_metric(args.metric, entries)
+    if args.metric == 'llamaguard4' and dataset_name:
+        print(f"📊 Special dataset detected: {dataset_name} (is_image: {is_image})")
+        flags, rate = evaluate_with_metric(
+            args.metric, 
+            entries,
+            dataset_name=dataset_name,
+            is_image=is_image,
+            image_dataset=image_dataset
+        )
+    else:
+        flags, rate = evaluate_with_metric(args.metric, entries)
 
     # Prepare outputs
     base_name = os.path.splitext(os.path.basename(args.input))[0]
