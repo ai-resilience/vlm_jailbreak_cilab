@@ -4,6 +4,8 @@ from .figstep import FigStepDataset
 from .strongreject import StrongREJECTDataset
 from .xstest import XSTestDataset
 from .advbench import AdvBenchDataset, HarmBenchDataset, SorryBenchDataset
+from .llmsafeguard import LLMSafeguardDataset
+from .mm_safety import MMTextDataset, MMTypoDataset, MMSDTypoDataset
 from typing import Tuple, List, Optional
 
 
@@ -33,6 +35,10 @@ def load_dataset(
         'AdvBench': AdvBenchDataset,
         'HarmBench': HarmBenchDataset,
         'SorryBench': SorryBenchDataset,
+        'llmsafeguard': LLMSafeguardDataset,
+        'mm_text': MMTextDataset,
+        'mm_typo': MMTypoDataset,
+        'mm_sd_typo': MMSDTypoDataset,
     }
     
     if name not in dataset_map:
@@ -58,6 +64,10 @@ __all__ = [
     'AdvBenchDataset',
     'HarmBenchDataset',
     'SorryBenchDataset',
+    'LLMSafeguardDataset',
+    'MMTextDataset',
+    'MMTypoDataset',
+    'MMSDTypoDataset',
     'load_dataset',
 ]
 
