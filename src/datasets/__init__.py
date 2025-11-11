@@ -6,7 +6,6 @@ from .xstest import XSTestDataset
 from .advbench import AdvBenchDataset, HarmBenchDataset, SorryBenchDataset
 from .llmsafeguard import LLMSafeguardDataset
 from .mm_safety import MMTextDataset, MMTypoDataset, MMSDTypoDataset
-from .jailbreakv_28k import JailBreakV28KDataset
 from typing import Tuple, List, Optional
 
 
@@ -40,10 +39,6 @@ def load_dataset(
         'mm_text': MMTextDataset,
         'mm_typo': MMTypoDataset,
         'mm_sd_typo': MMSDTypoDataset,
-        'JailBreakV-28K': lambda **kw: JailBreakV28KDataset(source='huggingface', **kw),
-        'JailBreakV-28K_hf': lambda **kw: JailBreakV28KDataset(source='huggingface', **kw),
-        'JailBreakV-28K_github': lambda **kw: JailBreakV28KDataset(source='github', **kw),
-        'JailBreakV-28K_local': lambda **kw: JailBreakV28KDataset(source='local', **kw),
     }
     
     if name not in dataset_map:
@@ -73,7 +68,6 @@ __all__ = [
     'MMTextDataset',
     'MMTypoDataset',
     'MMSDTypoDataset',
-    'JailBreakV28KDataset',
     'load_dataset',
 ]
 
