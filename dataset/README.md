@@ -2,7 +2,7 @@
 
 Benchmark datasets used to evaluate the framework for analyzing and manipulating Vision-Language Models’ safety mechanisms.
 
-## 🗂️ Key Benchmark Datasets for evaluating LVLM performance
+
 
 
 ## 🗂️ Key Benchmark Datasets for evaluating Jailbreaking Attacks
@@ -10,7 +10,7 @@ Benchmark datasets used to evaluate the framework for analyzing and manipulating
 ### 1. SafeBench (Figstep)
 🤗 [Zonghao2025/safebench](https://huggingface.co/datasets/Zonghao2025/safebench)        
 
-
+*** 
 
 ### 2. JailBreakV-28K
 🤗 [JailbreakV-28K/JailBreakV-28k](https://huggingface.co/datasets/JailbreakV-28K/JailBreakV-28k)   
@@ -55,40 +55,54 @@ Benchmark datasets used to evaluate the framework for analyzing and manipulating
 
 - Furthermore, JailBreakV-28K offers a broad spectrum of attack methodologies and integrates various **image types like Nature**, **Random Noise**, **Typography**, **Stable Diffusion (SD)**, **Blank**, and **SD + Typography images**.
 
-
+*** 
 
 ### 3. HarmBench
 🤗 [walledai/HarmBench](https://huggingface.co/datasets/walledai/HarmBench)   
-On the HarmBench [GitHub page](https://github.com/centerforaisafety/HarmBench?tab=readme-ov-file), the data folder contains the following four datasets:
-
-<table border="1" cellpadding="6" cellspacing="0">
+- On the HarmBench [GitHub page](https://github.com/centerforaisafety/HarmBench?tab=readme-ov-file), the data folder contains the following four datasets:
+ 
+  <table border="1" cellpadding="6" cellspacing="0">
   <thead>
-    <tr>
-      <th>Folder</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><div style="background-color:white;padding:4px 6px;"><strong>behavior_datasets</strong></div></td>
-      <td>HarmBench behavior datasets stored as CSVs. The full set is split into text and multimodal behaviors (different formats). Validation and test splits are included. Extra example datasets (AdvBench and TDC 2023 Red Teaming Track) are available under <code>behavior_datasets/extra_behavior_datasets</code>.</td>
-    </tr><tr>
-      <td><div style="background-color:white;padding:4px 6px;"><strong>copyright_classifier_hashes</strong></div></td>
-      <td>Hashes used by the copyright classifier for copyright-related behaviors; loaded during evaluation to detect whether model completions contain parts of books or song lyrics specified in a copyright behavior.</td>
-    </tr><tr>
-      <td><div style="background-color:white;padding:4px 6px;"><strong>multimodal_behavior_images</strong></div></td>
-      <td>**Images** referenced by **multimodal behaviors** (the visual assets used when evaluating multimodal test cases). (See <a href="https://github.com/centerforaisafety/HarmBench/tree/main/data/multimodal_behavior_images" target="_blank">multimodal behavior images</a> for reference.) </td>
-    </tr><tr>
-      <td><div style="background-color:white;padding:4px 6px;"><strong>optimizer_targets</strong></div></td>
-      <td>Standard target sets used by many red-teaming optimization methods (similar to targets in the <a href="https://arxiv.org/abs/2307.15043" target="_blank">GCG paper</a>). Additional target sets are provided in <code>optimizer_targets/extra_targets</code>, including sets for adversarial training, AdvBench, and model-specific custom targets.</td>
-    </tr>
-  </tbody>
-</table>
+      <tr>
+        <th>Folder</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><div style="background-color:white;padding:4px 6px;"><strong>behavior_datasets</strong></div></td>
+        <td>HarmBench behavior datasets stored as CSVs. The full set is split into text and multimodal behaviors (different formats). Validation and test splits are included. Extra example datasets (AdvBench and TDC 2023 Red Teaming Track) are available under <code>behavior_datasets/extra_behavior_datasets</code>.</td>
+      </tr><tr>
+        <td><div style="background-color:white;padding:4px 6px;"><strong>copyright_classifier_hashes</strong></div></td>
+        <td>Hashes used by the copyright classifier for copyright-related behaviors; loaded during evaluation to detect whether model completions contain parts of books or song lyrics specified in a copyright behavior.</td>
+      </tr><tr>
+        <td><div style="background-color:white;padding:4px 6px;"><strong>multimodal_behavior_images</strong></div></td>
+        <td>**Images** referenced by **multimodal behaviors** (the visual assets used when evaluating multimodal test cases). (See <a href="https://github.com/centerforaisafety/HarmBench/tree/main/data/multimodal_behavior_images" target="_blank">multimodal behavior images</a> for reference.) </td>
+      </tr><tr>
+        <td><div style="background-color:white;padding:4px 6px;"><strong>optimizer_targets</strong></div></td>
+        <td>Standard target sets used by many red-teaming optimization methods (similar to targets in the <a href="https://arxiv.org/abs/2307.15043" target="_blank">GCG paper</a>). Additional target sets are provided in <code>optimizer_targets/extra_targets</code>, including sets for adversarial training, AdvBench, and model-specific custom targets.</td>
+      </tr>
+    </tbody>
+  </table>
+
+*** 
+
+### 4. MultiTrust
+🤗 [thu-ml/MultiTrust](https://huggingface.co/datasets/thu-ml/MultiTrust)    
+- MultiTrust is a comprehensive benchmark designed to assess and enhance the trustworthiness of MLLMs across five key dimensions: **truthfulness**, **safety**, **robustness**, **fairness**, and **privacy**. It integrates a rigorous evaluation strategy involving **32 diverse tasks** to expose new trustworthiness challenges.
+
+ <img src="https://github.com/thu-ml/MMTrustEval/blob/main/docs/structure/framework.jpg?raw=true" width="600">
 
 
+#### Overall Results    
+- Proprietary models like GPT-4V and Claude3 demonstrate consistently top performance due to enhancements in alignment and safety filters compared with open-source models.    
+- A global analysis reveals a correlation coefficient of 0.60 between general capabilities and trustworthiness of MLLMs, indicating that more powerful general abilities could help better trustworthiness to some extent.
+- Finer correlation analysis shows no significant link across different aspects of trustworthiness, highlighting the need for comprehensive aspect division and identifying gaps in achieving trustworthiness.
+  
+  <img src="https://github.com/thu-ml/MMTrustEval/raw/main/docs/structure/overall.png" width="600">
 
+*** 
 
-
-### 4. AdvBench
+### 5. AdvBench
 🤗 [yukiyounai/AdvBench](https://huggingface.co/datasets/yukiyounai/AdvBench)   
 
