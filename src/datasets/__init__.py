@@ -6,6 +6,7 @@ from .xstest import XSTestDataset
 from .advbench import AdvBenchDataset, HarmBenchDataset, SorryBenchDataset
 from .llmsafeguard import LLMSafeguardDataset
 from .mm_safety import MMTextDataset, MMTypoDataset, MMSDTypoDataset, MMSDDataset
+from .jailbreakv28k import JailBreakV28KDataset
 from typing import Tuple, List, Optional
 
 
@@ -41,6 +42,8 @@ def load_dataset(
         'mm_typo': MMTypoDataset,
         'mm_sd_typo': MMSDTypoDataset,
         'mm_sd': MMSDDataset,
+        'JailBreakV28K': JailBreakV28KDataset,
+        'jailbreakv28k': JailBreakV28KDataset,
     }
     
     if name not in dataset_map:
@@ -52,7 +55,21 @@ def load_dataset(
         # It's a lambda function
         dataset = dataset_class(no_image=no_image, image=image, **kwargs)
     else:
-        dataset = dataset_class(no_image=no_image, image=image, **kwargs)
+        # Check if the class accepts kwargs by inspecting its __init__ signature
+        # This maintains backward compatibility while allowing new classes to use kwargs
+        import inspect
+        sig = inspect.signature(dataset_class.__init__)
+        accepts_kwargs = any(
+            param.kind == inspect.Parameter.VAR_KEYWORD 
+            for param in sig.parameters.values()
+        )
+        
+        if accepts_kwargs and kwargs:
+            # Class accepts **kwargs, so pass them
+            dataset = dataset_class(no_image=no_image, image=image, **kwargs)
+        else:
+            # Class doesn't accept kwargs, use original behavior (maintains backward compatibility)
+            dataset = dataset_class(no_image=no_image, image=image)
     
     return dataset.load()
 
@@ -72,6 +89,6 @@ __all__ = [
     'MMTypoDataset',
     'MMSDTypoDataset',
     'MMSDDataset',
+    'JailBreakV28KDataset',
     'load_dataset',
 ]
-
