@@ -13,6 +13,8 @@ from .base import (
 )
 from .keyword import KeywordMetric
 from .llamaguard import LlamaGuardMetric
+from .beaverdam import BeaverDamMetric
+from .wildguard import WildGuardMetric
 from typing import List, Dict, Tuple, Optional, Any
 from collections import OrderedDict
 import json
@@ -33,6 +35,8 @@ def load_metric(metric_name: str, **kwargs) -> BaseMetric:
         'keyword': KeywordMetric,
         # Only LlamaGuard v4 is exposed; keep only explicit key
         'llamaguard4': lambda **kw: LlamaGuardMetric(**kw),
+        'beaverdam': lambda **kw: BeaverDamMetric(**kw),
+        'wildguard': lambda **kw: WildGuardMetric(**kw),
     }
     
     if metric_name not in metric_map:
@@ -81,6 +85,14 @@ def evaluate_with_metric(
         if isinstance(metric, LlamaGuardMetric):
             return metric.evaluate(entries, dataset_name=dataset_name, is_image=is_image, image_dataset=image_dataset)
     
+    # BeaverDam also supports the same interface
+    if metric_name == 'beaverdam':
+        return metric.evaluate(entries, dataset_name=dataset_name, is_image=is_image, image_dataset=image_dataset)
+    
+    # WildGuard also supports the same interface
+    if metric_name == 'wildguard':
+        return metric.evaluate(entries, dataset_name=dataset_name, is_image=is_image, image_dataset=image_dataset)
+    
     return metric.evaluate(entries)
 
 
@@ -124,6 +136,8 @@ __all__ = [
     'BaseMetric',
     'KeywordMetric',
     'LlamaGuardMetric',
+    'BeaverDamMetric',
+    'WildGuardMetric',
     'load_metric',
     'evaluate_with_metric',
     'save_evaluation_results',

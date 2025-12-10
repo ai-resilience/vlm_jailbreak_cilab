@@ -19,9 +19,7 @@ from src.inference import generate_response
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Run VLM inference on a dataset with resolution adjustment")
-    parser.add_argument('--model_name', type=str, required=True,
-                       choices=['llava', 'llava_next', 'intern', 'qwen', 'deepseek', 'deepseek2', 'kimi'],
-                       help='Model name')
+    parser.add_argument('--model_name', type=str, required=True, help='Model name')
     parser.add_argument('--dataset', type=str, required=True,
                        help='Dataset name (e.g., Figstep, StrongREJECT, XSTest)')
     parser.add_argument('--image', type=str, default='blank',
@@ -35,14 +33,14 @@ def parse_args():
 
 def get_resolutions(model_name: str) -> list:
     """Get resolution list for each model.(preserve aspect ratio)"""
-    if model_name == "intern":
+    if model_name == "intern" or model_name == "phi":
         return [448, 896, 1344]
     elif model_name == "llava_next":
         return [336, 672]
     elif model_name == "deepseek2" or model_name == "deepseek":
         return [384, 768, 1152]
     elif model_name == "qwen" or model_name == "kimi":
-        return [280, 560, 840, 1120, 1400, 1680]
+        return [280, 560, 840, 1120, 1400]
     else:  # llava, deepseek
         return [None]  # Use original resolution
 
@@ -65,7 +63,7 @@ def main():
     
     # Determine if dataset has its own images
     # mm_safety datasets (mm_text, mm_typo, mm_sd_typo) and Figstep have their own images
-    datasets_with_images = ["mm_text", "mm_typo", "mm_sd_typo", "Figstep"]
+    datasets_with_images = ["mm_sd", "mm_text", "mm_typo", "mm_sd_typo", "Figstep"]
     has_dataset_images = args.dataset in datasets_with_images
     
     # Always use image mode (resolution adjustment requires images)

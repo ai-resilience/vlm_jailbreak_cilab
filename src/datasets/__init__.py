@@ -1,11 +1,11 @@
 """Dataset loaders for various safety benchmarks."""
 from .base import BaseDataset, DatasetSample
-from .figstep import FigStepDataset
+from .figstep import FigStepDataset, FigStepFontDataset
 from .strongreject import StrongREJECTDataset
 from .xstest import XSTestDataset
 from .advbench import AdvBenchDataset, HarmBenchDataset, SorryBenchDataset
 from .llmsafeguard import LLMSafeguardDataset
-from .mm_safety import MMTextDataset, MMTypoDataset, MMSDTypoDataset
+from .mm_safety import MMTextDataset, MMTypoDataset, MMSDTypoDataset, MMSDDataset
 from typing import Tuple, List, Optional
 
 
@@ -28,6 +28,7 @@ def load_dataset(
     """
     dataset_map = {
         'Figstep': FigStepDataset,
+        'Figstep_font': lambda **kw: FigStepFontDataset(**kw),
         'StrongREJECT': StrongREJECTDataset,
         'XSTest': XSTestDataset,
         'XSTest_safe': lambda **kw: XSTestDataset(filter_safe=True, **kw),
@@ -39,6 +40,7 @@ def load_dataset(
         'mm_text': MMTextDataset,
         'mm_typo': MMTypoDataset,
         'mm_sd_typo': MMSDTypoDataset,
+        'mm_sd': MMSDDataset,
     }
     
     if name not in dataset_map:
@@ -50,7 +52,7 @@ def load_dataset(
         # It's a lambda function
         dataset = dataset_class(no_image=no_image, image=image, **kwargs)
     else:
-        dataset = dataset_class(no_image=no_image, image=image)
+        dataset = dataset_class(no_image=no_image, image=image, **kwargs)
     
     return dataset.load()
 
@@ -59,6 +61,7 @@ __all__ = [
     'BaseDataset',
     'DatasetSample',
     'FigStepDataset',
+    'FigStepFontDataset',
     'StrongREJECTDataset',
     'XSTestDataset',
     'AdvBenchDataset',
@@ -68,6 +71,7 @@ __all__ = [
     'MMTextDataset',
     'MMTypoDataset',
     'MMSDTypoDataset',
+    'MMSDDataset',
     'load_dataset',
 ]
 

@@ -30,7 +30,7 @@ class BaseDataset(ABC):
         """
         pass
     
-    def _get_image_path(self, num: int = 112) -> Optional[str]:
+    def _get_image_path(self, num: int = 448) -> Optional[str]:
         """Get image path based on configuration."""
         if self.no_image:
             return None
@@ -39,6 +39,8 @@ class BaseDataset(ABC):
             return self.image
         elif self.image == "blank":
             return f"dataset/blank/blank_{num}.png"
+        elif self.image == "white":
+            return f"dataset/white/white_{num}.png"
         elif self.image == "panda":
             return "dataset/clean.jpeg"
         elif self.image == "noise":

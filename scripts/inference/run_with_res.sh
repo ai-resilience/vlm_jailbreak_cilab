@@ -3,9 +3,9 @@
 # Run inference with resolution adjustment for multiple models/datasets
 
 gpu_id="0"
-models=("intern" "qwen" "deepseek2" "kimi" "llava_next")
-datasets=("mm_typo") # "Figstep" "mm_sd_typo" "XSTest"
-images=("blank" "white") # "panda" "noise"
+models=("phi" "llava_next" "qwen" "intern") 
+datasets=("mm_sd") # "Figstep" "mm_sd_typo" "XSTest"
+images=("") # "panda" "noise"
 max_new_tokens=128
 
 # Base directories

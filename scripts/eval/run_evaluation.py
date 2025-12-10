@@ -21,7 +21,7 @@ from src.evaluate import (
 def parse_args():
     parser = argparse.ArgumentParser(description="Run evaluation with a metric")
     parser.add_argument('--metric', type=str, required=True,
-                        choices=['keyword', 'llamaguard4'],
+                        choices=['keyword', 'llamaguard4', 'beaverdam', 'wildguard'],
                         help='Metric name')
     parser.add_argument('--input', type=str, required=True,
                         help='Path to input predictions jsonl/json file')
@@ -54,7 +54,11 @@ def main():
     input_basename = os.path.basename(args.input)
     
     # Check for special datasets
-    if "Figstep" in input_basename or "figstep" in input_basename.lower():
+    if "Figstep_res" in input_basename or "figstep_res" in input_basename.lower():
+        dataset_name = "Figstep_res"
+    elif "Figstep_font" in input_basename or "figstep_font" in input_basename.lower():
+        dataset_name = "Figstep_font"
+    elif "Figstep" in input_basename or "figstep" in input_basename.lower():
         dataset_name = "Figstep"
     elif "mm_sd_typo" in input_basename:
         dataset_name = "mm_sd_typo"
@@ -68,7 +72,7 @@ def main():
     
     # Evaluate
     print(f"🚀 Evaluating with metric: {args.metric}")
-    if args.metric == 'llamaguard4' and dataset_name:
+    if args.metric in ['llamaguard4', 'beaverdam', 'wildguard'] and dataset_name:
         print(f"📊 Special dataset detected: {dataset_name} (is_image: {is_image})")
         flags, rate = evaluate_with_metric(
             args.metric, 
@@ -89,7 +93,7 @@ def main():
     if args.metric == 'keyword':
         result_field = 'refusal'
         report_text = format_refusal_report(total=len(entries), flagged=sum(flags), rate=rate)
-    else:  # llamaguard4
+    else:  # llamaguard4, beaverdam, wildguard
         result_field = 'unsafe'
         report_text = format_unsafe_report(total=len(entries), flagged=sum(flags), rate=rate)
 

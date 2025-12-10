@@ -12,6 +12,7 @@ from .hidden_states import (
     extract_hidden_states,
     compute_cosine_similarity,
     extract_token_hidden_states,
+    extract_average_hidden_states,
     save_hidden_states,
     load_hidden_states
 )
@@ -34,6 +35,7 @@ __all__ = [
     'extract_hidden_states',
     'compute_cosine_similarity',
     'extract_token_hidden_states',
+    'extract_average_hidden_states',
     'save_hidden_states',
     'load_hidden_states',
     # Visualization

@@ -10,19 +10,19 @@ models:
     name: "LLaVA-NeXT"
     path: "/mnt/server14_hard1/kihyun/llava-v1.6-mistral-7b-hf"
     safety_token_index: 4  # -4th token for analysis
-    safety_aware_layer: 18
+    safety_aware_layer: [13, 18] # and 18 is best
     
   qwen:
     name: "Qwen2.5-VL"
     path: "/mnt/server14_hard1/kihyun/Qwen2.5-VL-7B-Instruct"
     safety_token_index: 2
-    safety_aware_layer: 19
+    safety_aware_layer: [19, 21] # and 21 is best
     
   intern:
     name: "InternVL3"
     path: "/mnt/server14_hard1/kihyun/InternVL3-8B"
     safety_token_index: 5  # -5th token for analysis
-    safety_aware_layer: 20
+    safety_aware_layer: [14, 20] # and 20 is best
     
   deepseek:
     name: "DeepSeek-VL"
@@ -40,10 +40,22 @@ models:
     name: "Kimi-VL-A3B-instruct(MoE)"
     path: "/mnt/server14_hard1/kihyun/Kimi-VL-A3B-Instruct"
     safety_token_index: 1
+    safety_aware_layer: [14, 20] # and 15 is best
+
+  phi:
+    name: "Phi-4-multimodal-instruct"
+    path: "/mnt/server14_hard1/kihyun/Phi-4-multimodal-instruct"
+    safety_token_index: 1
     safety_aware_layer: 1
 
   llamaguard4:
     name: "Llama-Guard-4-12B"
     path: "/mnt/server14_hard1/kihyun/Llama-Guard-4-12B"
 
-
+  beaverdam:
+    name: "Beaver-Dam-7B"
+    path: "/mnt/server14_hard1/kihyun/beaver-dam-7b"
+    
+  wildguard:
+    name: "Wildguard-7B"
+    path: "/mnt/server14_hard1/kihyun/wildguard"

@@ -184,6 +184,54 @@ def extract_token_hidden_states(
     return vectors
 
 
+def extract_average_hidden_states(
+    hidden_states: List[torch.Tensor],
+    norm_layer: Any,
+    attention_mask: Optional[torch.Tensor] = None,
+    num_layers: Optional[int] = None
+) -> List[np.ndarray]:
+    """Extract average hidden states across all tokens in sequence for all layers.
+    
+    Args:
+        hidden_states: Hidden states from model [layer][batch, seq_len, dim]
+        norm_layer: Normalization layer
+        attention_mask: Attention mask to exclude padding tokens (optional)
+        num_layers: Number of layers (if None, use all)
+        
+    Returns:
+        List of average vectors per layer [layer][dim]
+    """
+    if num_layers is None:
+        num_layers = len(hidden_states)
+    
+    vectors = []
+    for idx in range(num_layers):
+        # Get hidden states for this layer: [batch, seq_len, dim]
+        layer_hidden = hidden_states[idx]
+        
+        # Take first batch: [seq_len, dim]
+        seq_hidden = layer_hidden[0]
+        
+        # Apply attention mask if provided
+        if attention_mask is not None:
+            # attention_mask: [batch, seq_len] -> [seq_len]
+            mask = attention_mask[0].unsqueeze(-1).float()  # [seq_len, 1]
+            # Mask out padding tokens
+            seq_hidden = seq_hidden * mask
+            # Compute average: sum / count of non-padding tokens
+            avg_vec = seq_hidden.sum(dim=0) / mask.sum()
+        else:
+            # Simple average across sequence length
+            avg_vec = seq_hidden.mean(dim=0)  # [dim]
+        
+        # Apply normalization
+        avg_vec = avg_vec.unsqueeze(0)  # [1, dim] for norm layer
+        normed_vec = norm_layer(avg_vec).squeeze(0).detach().cpu().float().numpy()
+        vectors.append(normed_vec)
+    
+    return vectors
+
+
 def save_hidden_states(
     vectors_all_layers: List[List[np.ndarray]],
     save_path: str

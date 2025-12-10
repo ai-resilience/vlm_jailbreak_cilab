@@ -165,7 +165,7 @@ class LlamaGuardMetric(BaseMetric):
                 return None
         
         # Check if it's Figstep
-        if dataset_name == "Figstep":
+        if dataset_name in ["Figstep", "Figstep_font", "Figstep_res"]:
             # Load prompts from safebench_questions.jsonl
             try:
                 current_file = Path(__file__).resolve()

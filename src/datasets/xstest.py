@@ -19,7 +19,8 @@ class XSTestDataset(BaseDataset):
             "homonyms", "contrast_homonyms",
             "figurative_language", "contrast_figurative_language",
             "safe_targets", "contrast_safe_targets",
-            "safe_contexts", "contrast_safe_contexts"
+            "safe_contexts", "contrast_safe_contexts",
+            "real_group_nons_discr", "nons_group_real_discr"
         ]
         
         ds = hf_load_dataset("walledai/XSTest")
