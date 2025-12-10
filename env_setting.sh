@@ -6,3 +6,8 @@ pip install matplotlib==3.10.7
 pip install tiktoken==0.12.0
 pip install ipdb
 pip install gpustat
+
+pip install flash_attn==2.8.3
+pip install backoff==2.2.1
+pip install peft==0.13.2
+pip install xformers==0.0.33.post2
