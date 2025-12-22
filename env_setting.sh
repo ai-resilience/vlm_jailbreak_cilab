@@ -7,7 +7,11 @@ pip install tiktoken==0.12.0
 pip install ipdb
 pip install gpustat
 
-pip install flash_attn==2.8.3
-pip install backoff==2.2.1
-pip install peft==0.13.2
-pip install xformers==0.0.33.post2
+# phi
+# pip install peft==0.13.2
+# pip install backoff==2.2.1
+
+# deepseek2
+# pip install attrdict
+# pip install flash-attn --no-build-isolation
+# pip install xformers>=0.0.21
