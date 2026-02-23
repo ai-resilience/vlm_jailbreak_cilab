@@ -7,9 +7,9 @@ from .base import BaseDataset
 class FigStepDataset(BaseDataset):
     """FigStep dataset for adversarial images."""
     
-    def __init__(self, no_image: bool = False, image: Optional[str] = None):
+    def __init__(self, no_image: bool = False, image: Optional[str] = None, subset: str = "SafeBench"):
         super().__init__(no_image, image)
-        self.data_dir = "dataset/FigStep/data/images/SafeBench"
+        self.data_dir = f"dataset/FigStep/data/images/{subset}"
         
     def load(self) -> Tuple[List[str], List[int], List[Optional[str]], List[Optional[str]]]:
         """Load FigStep dataset."""
@@ -36,13 +36,12 @@ class FigStepDataset(BaseDataset):
 class FigStepFontDataset(BaseDataset):
     """FigStep dataset with font size-specific images."""
     
-    def __init__(self, no_image: bool = False, image: Optional[str] = None, font_size: Optional[int] = None, model_name: Optional[str] = None):
+    def __init__(self, no_image: bool = False, image: Optional[str] = None, font_size: Optional[int] = None, model_name: Optional[str] = None, subset: str = "SafeBench"):
         super().__init__(no_image, image)
-        # Use model_name if provided, otherwise default to deepseek2
-        if model_name:
-            self.data_dir = f"dataset/FigStep/data/images/SafeBench/{model_name}"
-        else:
-            self.data_dir = "dataset/FigStep/data/images/SafeBench/deepseek2"
+        # If using Tiny, there is no model_name subfolder; otherwise include model_name or default to 'deepseek2'
+        self.data_dir = (f"dataset/FigStep/data/images/{subset}"
+                         if subset == "SafeBench-Tiny"
+                         else f"dataset/FigStep/data/images/{subset}/{model_name or 'deepseek2'}")
         self.font_size = font_size
         
     def load(self) -> Tuple[List[str], List[int], List[Optional[str]], List[Optional[str]]]:
