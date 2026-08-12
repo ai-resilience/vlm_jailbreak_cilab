@@ -10,6 +10,10 @@ This repository provides tools for:
 - **Activation Steering**: Modify model behavior via targeted interventions
 - **Safety Evaluation**: Comprehensive benchmarking on harmful/benign datasets
 
+## Reproducible Experiments
+
+- [Multimodal Input Order and LVLM Safety](experiments/input_order_effect/README.md): Image First vs. Text First experiments on SafeBench and MM-SafetyBench.
+
 ## 🏗️ Project Structure
 
 ```
@@ -264,4 +268,3 @@ For questions or issues, please open a GitHub issue or contact the maintainers.
 ---
 
 **Note**: This framework is for research purposes only. Be responsible when working with harmful content datasets.
-

@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.cache/
+.env
+data/raw/
+checkpoints/
+results/responses/
+results/activations/
+results/evaluations/*.per_item.json
+*.npy
+*.npz
