@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Cache
+.cache/
+
+# Data (symlinks to local datasets)
+eval_safety/eval_data/
+
+# HuggingFace download artifacts
+eval_safety/huggingface/
+
+# Model symlinks
+MLLMs/
+
+# Accidentally generated files
+=0.11.0
+user_lib.py
