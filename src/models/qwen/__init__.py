@@ -1,3 +1,0 @@
-"""Qwen-VL model package."""
-
-

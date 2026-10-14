@@ -1,2 +1,0 @@
-"""Kimi-VL model package."""
-
