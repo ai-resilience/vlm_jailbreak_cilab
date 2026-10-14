@@ -180,6 +180,12 @@ python scripts/inference/run_inference.py \
     --image noise
 ```
 
+### 4. Image Verification Safety
+
+Evaluate VLM safety under image verification settings.
+
+> **Note**: To run the Image Verification Safety experiments, please check out the `Image_Verification_Safety` branch and refer to `image_verification_safety.md`.
+
 ## 📊 Supported Models
 
 | Model | Architecture | Size | Notes |
