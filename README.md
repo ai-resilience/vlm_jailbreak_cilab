@@ -186,6 +186,12 @@ Evaluate VLM safety under image verification settings.
 
 > **Note**: To run the Image Verification Safety experiments, please check out the `Image_Verification_Safety` branch and refer to `image_verification_safety.md`.
 
+### 5. Input Order Effect
+
+Evaluate VLM safety under input order settings.
+
+> **Note**: To run the Input Order Effect experiments, please check out the `Input_Order_Effect` branch and refer to `input_order_effect.md`.
+
 ## 📊 Supported Models
 
 | Model | Architecture | Size | Notes |
