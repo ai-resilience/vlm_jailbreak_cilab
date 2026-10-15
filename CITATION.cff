@@ -1,0 +1,6 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the accompanying paper."
+title: "Multimodal Input Order and LVLM Safety"
+type: software
+version: 0.1.0
+date-released: 2026-08-11

@@ -1,0 +1,12 @@
+accelerate==1.13.0
+datasets==4.8.4
+huggingface-hub==0.36.2
+matplotlib==3.10.8
+numpy==1.26.4
+Pillow==12.2.0
+qwen-vl-utils==0.0.14
+scikit-learn==1.7.2
+torch==2.10.0
+torchvision==0.25.0
+transformers==4.57.1
+tqdm==4.67.1
