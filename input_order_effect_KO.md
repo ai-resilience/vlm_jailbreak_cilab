@@ -1,6 +1,6 @@
 # 멀티모달 입력 순서와 LVLM 안전성
 
-[English README](README.md)
+[English version](input_order_effect.md)
 
 이 저장소는 이미지–텍스트 입력 순서가 대규모 비전-언어 모델의 안전 정렬에 미치는 영향을 연구한 실험을 재현합니다. 동일한 멀티모달 요청을 이미지가 텍스트보다 앞서는 **Image First** 조건과 텍스트가 이미지보다 앞서는 **Text First** 조건으로 평가합니다. 실험은 SafeBench (Typo), MM-SafetyBench (SD+Typo), MM-SafetyBench (SD)를 대상으로 하며, 각 벤치마크에서 500개 예제를 사용합니다.
 

@@ -1,6 +1,6 @@
 # Multimodal Input Order and LVLM Safety
 
-[한국어 README](README_KO.md)
+[한국어 버전](input_order_effect_KO.md)
 
 This repository reproduces the study of how image–text input order affects safety alignment in large vision-language models. The same multimodal request is evaluated with the image before the text (**Image First**) and with the text before the image (**Text First**). Experiments cover SafeBench (Typo), MM-SafetyBench (SD+Typo), and MM-SafetyBench (SD) using 500 examples per benchmark.
 
